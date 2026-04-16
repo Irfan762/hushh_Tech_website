@@ -41,7 +41,21 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     target: 'es2017',
-    chunkSizeWarningLimit: 5000,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'chakra-vendor': ['@chakra-ui/react', '@emotion/react', '@emotion/styled', 'framer-motion'],
+          'antd-vendor': ['antd', '@ant-design/icons'],
+          'supabase-vendor': ['supabase', '@supabase/supabase-js'],
+          'icons-vendor': ['react-icons', 'lucide-react'],
+          'form-vendor': ['react-hook-form', 'react-select', 'react-phone-input-2'],
+          'charts-vendor': ['recharts'],
+          'markdown-vendor': ['@mdx-js/react', 'react-markdown', 'rehype-slug', 'remark-gfm', 'react-syntax-highlighter']
+        }
+      }
+    },
     // Security: Strip ALL console statements in production builds
     // Prevents exposure of tokens, financial data, and internal logs
     minify: 'terser',
