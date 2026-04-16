@@ -15,7 +15,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ─── Mock Session Data ──────────────────────────────────────────────────────
 const MOCK_SESSION = {
-  access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token-payload',
+  access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock-token-payload.mock-signature-abc123',
   refresh_token: 'mock-refresh-token-123',
   expires_in: 3600,
   token_type: 'bearer',
@@ -347,8 +347,8 @@ describe('Authentication Service', () => {
       const mockCallback = vi.fn();
       const token = await getAccessToken(mockCallback);
 
-      // JWT format: header.payload.signature
-      expect(token).toMatch(/^[A-Za-z0-9-_.]+$/);
+      // JWT format: three base64url segments separated by dots (header.payload.signature)
+      expect(token).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
     });
   });
 
