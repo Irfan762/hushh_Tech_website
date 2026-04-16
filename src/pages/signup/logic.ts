@@ -24,8 +24,15 @@ export interface SignupLogic {
   isSigningIn: boolean;
   oauthError: string | null;
   oauthFallbackUrl: string | null;
+  email: string;
+  setEmail: (val: string) => void;
+  password: string;
+  setPassword: (val: string) => void;
+  confirmPassword: string;
+  setConfirmPassword: (val: string) => void;
   handleAppleSignIn: () => Promise<void>;
   handleGoogleSignIn: () => Promise<void>;
+  handleEmailSignup: (e: React.FormEvent) => Promise<void>;
 }
 
 /* ─── Main Hook ─── */
@@ -34,6 +41,9 @@ export const useSignupLogic = (): SignupLogic => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [oauthError, setOAuthError] = useState<string | null>(null);
   const [oauthFallbackUrl, setOAuthFallbackUrl] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const { status, startOAuth } = useAuthSession();
 
   const hostResolution = useMemo(
@@ -145,6 +155,48 @@ export const useSignupLogic = (): SignupLogic => {
     }
   }, [handleOAuthFailure, isSigningIn, startOAuth]);
 
+  const handleEmailSignup = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (isSigningIn) return;
+
+      if (!email || !password || !confirmPassword) {
+        setOAuthError("Please fill in all fields.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setOAuthError("Passwords do not match.");
+        return;
+      }
+
+      setIsSigningIn(true);
+      setOAuthError(null);
+      setOAuthFallbackUrl(null);
+
+      const supabase = config.supabaseClient;
+      if (!supabase) {
+        setOAuthError("Authentication is not configured correctly.");
+        setIsSigningIn(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        setOAuthError(error.message);
+        setIsSigningIn(false);
+      }
+    },
+    [email, password, confirmPassword, isSigningIn]
+  );
+
   return {
     isLoading: status === "booting" || shouldRedirectToSupportedHost,
     isSigningIn,
@@ -152,5 +204,12 @@ export const useSignupLogic = (): SignupLogic => {
     oauthFallbackUrl,
     handleAppleSignIn,
     handleGoogleSignIn,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    handleEmailSignup,
   };
 };

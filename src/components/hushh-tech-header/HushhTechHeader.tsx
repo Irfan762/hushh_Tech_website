@@ -7,9 +7,11 @@
  * Below: Scrolling stock ticker with live quotes (Google, Apple, etc.)
  */
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import hushhLogo from "../images/Hushhogo.png";
 import HushhTechNavDrawer from "../hushh-tech-nav-drawer/HushhTechNavDrawer";
 import { useStockQuotes, StockQuote } from "../../hooks/useStockQuotes";
+import { useAuthSession } from "../../auth/AuthSessionProvider";
 
 /* ── Chip-based ticker component — matches Navbar design ── */
 const TickerChip = ({ quote, isLoading }: { quote: StockQuote; isLoading?: boolean }) => (
@@ -58,6 +60,9 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
   className = "",
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const navigate = useNavigate();
+  const { status } = useAuthSession();
+  const isAuthenticated = status === "authenticated";
 
   // Fetch real-time stock quotes (refreshes every 2 minutes)
   const { quotes, loading: quotesLoading, lastUpdated } = useStockQuotes(120000);
@@ -89,17 +94,47 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
             </div>
           </div>
 
-          {/* Hamburger menu button */}
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition-colors"
-            aria-label="Open menu"
-            tabIndex={0}
-          >
-            <span className="material-symbols-outlined text-white !text-[1.2rem]">
-              menu
-            </span>
-          </button>
+          {/* Right section: Auth + Hamburger */}
+          <div className="flex items-center gap-4">
+            {/* Desktop Auth Actions */}
+            <div className="hidden sm:flex items-center gap-3 mr-2">
+              {isAuthenticated ? (
+                <button
+                  onClick={() => navigate("/hushh-user-profile")}
+                  className="text-sm font-medium text-gray-600 hover:text-hushh-blue transition-colors px-2"
+                >
+                  Profile
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="text-sm font-medium text-gray-600 hover:text-hushh-blue transition-colors px-2"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={() => navigate("/signup")}
+                    className="px-4 py-2 bg-black text-white text-sm font-medium rounded-full hover:bg-black/80 transition-colors"
+                  >
+                    Sign Up
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Hamburger menu button */}
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition-colors"
+              aria-label="Open menu"
+              tabIndex={0}
+            >
+              <span className="material-symbols-outlined text-white !text-[1.2rem]">
+                menu
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* ── Stock Ticker Strip — below header nav ── */}

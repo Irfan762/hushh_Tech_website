@@ -26,8 +26,13 @@ export interface LoginLogic {
   bootTimedOut: boolean;
   oauthError: string | null;
   oauthFallbackUrl: string | null;
+  email: string;
+  setEmail: (val: string) => void;
+  password: string;
+  setPassword: (val: string) => void;
   handleAppleSignIn: () => Promise<void>;
   handleGoogleSignIn: () => Promise<void>;
+  handleEmailLogin: (e: React.FormEvent) => Promise<void>;
 }
 
 /* ─── Constants ─── */
@@ -42,6 +47,8 @@ export const useLoginLogic = (): LoginLogic => {
   const [maxLoadingTimedOut, setMaxLoadingTimedOut] = useState(false);
   const [oauthError, setOAuthError] = useState<string | null>(null);
   const [oauthFallbackUrl, setOAuthFallbackUrl] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { status, startOAuth } = useAuthSession();
   const hasLoggedRedirectRef = useRef(false);
 
@@ -206,6 +213,40 @@ export const useLoginLogic = (): LoginLogic => {
     }
   }, [handleOAuthFailure, isSigningIn, startOAuth]);
 
+  const handleEmailLogin = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (isSigningIn) return;
+
+      if (!email || !password) {
+        setOAuthError("Please enter both email and password.");
+        return;
+      }
+
+      setIsSigningIn(true);
+      setOAuthError(null);
+      setOAuthFallbackUrl(null);
+
+      const supabase = config.supabaseClient;
+      if (!supabase) {
+        setOAuthError("Authentication is not configured correctly.");
+        setIsSigningIn(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setOAuthError(error.message);
+        setIsSigningIn(false);
+      }
+    },
+    [email, password, isSigningIn]
+  );
+
   // Compute isLoading: allow boot timeout OR absolute max timeout to force-show buttons.
   // The maxLoadingTimedOut acts as an absolute safety net — no matter what, after 5s
   // the loading screen disappears and buttons are shown.
@@ -221,5 +262,10 @@ export const useLoginLogic = (): LoginLogic => {
     oauthFallbackUrl,
     handleAppleSignIn,
     handleGoogleSignIn,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    handleEmailLogin,
   };
 };

@@ -27,6 +27,13 @@ export default function SignupPage() {
     oauthFallbackUrl,
     handleAppleSignIn,
     handleGoogleSignIn,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    handleEmailSignup,
   } = useSignupLogic();
 
   if (isLoading) {
@@ -71,28 +78,87 @@ export default function SignupPage() {
           </p>
         </section>
 
-        {/* ── Sign-up Buttons ── */}
-        <section className="space-y-3 mb-10">
+        {/* ── Sign-up Form ── */}
+        <form onSubmit={handleEmailSignup} className="space-y-5 mb-8">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
+              placeholder="name@email.com"
+              required
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
+              placeholder="••••••••"
+              required
+            />
+          </div>
           <HushhTechCta
             variant={HushhTechCtaVariant.BLACK}
+            type="submit"
+            disabled={isSigningIn}
+          >
+            {isSigningIn ? "Creating Account..." : "Create Account"}
+          </HushhTechCta>
+        </form>
+
+        {/* ── Divider ── */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="h-[1px] flex-1 bg-gray-100" />
+          <span className="text-[11px] font-semibold text-gray-300 uppercase tracking-[0.2em]">
+            Or Continue With
+          </span>
+          <div className="h-[1px] flex-1 bg-gray-100" />
+        </div>
+
+        {/* ── OAuth Buttons ── */}
+        <section className="flex flex-col gap-3 mb-10">
+          <button
             onClick={handleAppleSignIn}
             disabled={isSigningIn}
+            className="flex items-center justify-center gap-3 w-full py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
-            <FaApple className="text-lg" />
-            <span>Continue with Apple</span>
-          </HushhTechCta>
+            <FaApple className="text-[1.2rem]" />
+            <span className="text-sm font-semibold">Apple</span>
+          </button>
 
-          <HushhTechCta
-            variant={HushhTechCtaVariant.WHITE}
+          <button
             onClick={handleGoogleSignIn}
             disabled={isSigningIn}
+            className="flex items-center justify-center gap-3 w-full py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
-            <FcGoogle className="text-lg" />
-            <span>Continue with Google</span>
-          </HushhTechCta>
+            <FcGoogle className="text-[1.1rem]" />
+            <span className="text-sm font-semibold">Google</span>
+          </button>
 
           {oauthError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mt-4">
               <p>{oauthError}</p>
               {oauthFallbackUrl ? (
                 <a
