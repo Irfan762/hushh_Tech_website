@@ -181,16 +181,19 @@ export const useSignupLogic = (): SignupLogic => {
         return;
       }
 
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
+      try {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
 
-      if (error) {
-        setOAuthError(error.message);
+        if (error) {
+          setOAuthError(error.message);
+        }
+      } finally {
         setIsSigningIn(false);
       }
     },

@@ -234,13 +234,16 @@ export const useLoginLogic = (): LoginLogic => {
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      if (error) {
-        setOAuthError(error.message);
+        if (error) {
+          setOAuthError(error.message);
+        }
+      } finally {
         setIsSigningIn(false);
       }
     },

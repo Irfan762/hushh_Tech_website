@@ -128,6 +128,20 @@ export default function SignupPage() {
           </HushhTechCta>
         </form>
 
+        {oauthError ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mb-8">
+            <p>{oauthError}</p>
+            {oauthFallbackUrl ? (
+              <a
+                href={oauthFallbackUrl}
+                className="mt-2 inline-flex font-medium underline underline-offset-2"
+              >
+                Continue on the supported sign-up host
+              </a>
+            ) : null}
+          </div>
+        ) : null}
+
         {/* ── Divider ── */}
         <div className="flex items-center gap-4 mb-8">
           <div className="h-[1px] flex-1 bg-gray-100" />
@@ -145,7 +159,7 @@ export default function SignupPage() {
             className="flex items-center justify-center gap-3 w-full py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
             <FaApple className="text-[1.2rem]" />
-            <span className="text-sm font-semibold">Apple</span>
+            <span className="text-sm font-semibold">Continue with Apple</span>
           </button>
 
           <button
@@ -154,22 +168,8 @@ export default function SignupPage() {
             className="flex items-center justify-center gap-3 w-full py-3.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
             <FcGoogle className="text-[1.1rem]" />
-            <span className="text-sm font-semibold">Google</span>
+            <span className="text-sm font-semibold">Continue with Google</span>
           </button>
-
-          {oauthError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mt-4">
-              <p>{oauthError}</p>
-              {oauthFallbackUrl ? (
-                <a
-                  href={oauthFallbackUrl}
-                  className="mt-2 inline-flex font-medium underline underline-offset-2"
-                >
-                  Continue on the supported sign-up host
-                </a>
-              ) : null}
-            </div>
-          ) : null}
         </section>
 
         {/* ── Login link ── */}

@@ -59,8 +59,8 @@ export default defineConfig({
   server: {
     proxy: {
       // Forward API calls to the serverless host in dev (vercel dev runs on 3000 by default)
-      // Exclude /api/shared/* — these are bundled modules, not serverless endpoints
-      '^/api/(?!shared/)': {
+      // Exclude /api/shared and /api/shared/* — these are bundled modules, not serverless endpoints
+      '^/api(?:/(?!shared(?:/|$)).*)?$': {
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
