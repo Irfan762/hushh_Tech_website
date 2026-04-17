@@ -75,6 +75,7 @@ import DocumentViewerPage from './pages/document-viewer';
 import NDAAdminPage from './pages/nda-admin';
 import { AuthSessionProvider, useAuthSession } from './auth/AuthSessionProvider';
 import AuthRequiredRoute from './components/AuthRequiredRoute';
+import NotFoundPage from './pages/not-found/ui';
 
 // Google Analytics configuration
 const GA_TRACKING_ID = 'G-R58S9WWPM0';
@@ -403,6 +404,8 @@ function App() {
             <Route path='/document-viewer' element={<DocumentViewerPage />} />
             {/* NDA Admin Page - Password protected view of all NDA agreements */}
             <Route path='/nda-admin' element={<NDAAdminPage />} />
+            {/* Catch-all 404 Route */}
+            <Route path='*' element={<NotFoundPage />} />
           </Routes>
         </ContentWrapper>
         {showFooter && <Footer />}
