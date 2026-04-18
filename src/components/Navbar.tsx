@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FiMenu, FiX, FiChevronDown, FiUser, FiTrash2, FiChevronDown as FiArrowDown } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { Image, useToast, useBreakpointValue, useDisclosure } from "@chakra-ui/react";
-import hushhLogo from "../components/images/Hushhogo.png";
+import HushhLogo from "./brand/HushhLogo";
 import LanguageSwitcher from "./LanguageSwitcher";
 import DeleteAccountModal from "./DeleteAccountModal";
 import { useStockQuotes, StockQuote, STOCK_LOGOS } from "../hooks/useStockQuotes";
@@ -214,21 +214,7 @@ export default function Navbar() {
         {/* Main Navigation Bar - Soft Light Background */}
         <nav className="flex w-full items-center justify-between bg-[#F8F9FA] px-4 lg:px-8 h-16 border-b border-gray-200 transition-colors duration-300">
           {/* Left: Brand Lockup */}
-          <Link to="/" className="flex items-center gap-3">
-            {/* Hushh Logo Image in Circle with subtle gradient */}
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-200/50 shadow-sm shrink-0 overflow-hidden">
-              <Image 
-                src={hushhLogo} 
-                alt="Hushh Logo" 
-                className="w-7 h-7 object-contain"
-              />
-            </div>
-            {/* Brand Text - Stacked Layout */}
-            <div className="flex flex-col">
-              <h1 className="text-[18px] font-bold leading-none tracking-tight text-gray-900">Hushh</h1>
-              <span className="text-[13px] text-gray-500 font-medium mt-0.5">Technologies</span>
-            </div>
-          </Link>
+          <HushhLogo onClick={() => navigate("/")} />
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">

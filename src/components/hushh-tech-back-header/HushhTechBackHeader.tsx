@@ -11,6 +11,8 @@
 import React, { useState } from "react";
 import HushhTechNavDrawer from "../hushh-tech-nav-drawer/HushhTechNavDrawer";
 import HushhTechFaqSheet from "../hushh-tech-faq-sheet/HushhTechFaqSheet";
+import HushhLogo from "../brand/HushhLogo";
+import { useNavigate } from "react-router-dom";
 
 interface HushhTechBackHeaderProps {
   /** Callback when back arrow is clicked */
@@ -37,6 +39,7 @@ const HushhTechBackHeader: React.FC<HushhTechBackHeaderProps> = ({
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -54,6 +57,9 @@ const HushhTechBackHeader: React.FC<HushhTechBackHeaderProps> = ({
             west
           </span>
         </button>
+        
+        {/* Standardized Logo centered */}
+        <HushhLogo onClick={() => navigate("/")} />
 
         {/* Right action button */}
         {showRightButton && rightType === "hamburger" && (
