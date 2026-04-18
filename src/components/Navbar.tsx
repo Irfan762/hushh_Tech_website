@@ -210,9 +210,9 @@ export default function Navbar() {
   return (
     <>
       {/* Fixed Header with Navigation + Ticker - Light Theme */}
-      <header className="fixed w-full z-[999] top-0">
+      <header className="fixed w-full z-[999] top-0 shadow-sm">
         {/* Main Navigation Bar - Soft Light Background */}
-        <nav className="flex w-full items-center justify-between bg-[#F8F9FA] px-4 lg:px-8 h-16 border-b border-gray-200 transition-colors duration-300">
+        <nav className="flex w-full items-center justify-between bg-white px-4 lg:px-8 h-16 transition-colors duration-300">
           {/* Left: Brand Lockup */}
           <HushhLogo onClick={() => navigate("/")} />
 
@@ -260,12 +260,20 @@ export default function Navbar() {
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={() => navigate('/Login')}
-                    className="inline-flex items-center justify-center rounded-full bg-[#2F80ED] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1f6cc7] transition-colors"
-                  >
-                    {t('nav.login')}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => navigate('/Login')}
+                      className="inline-flex items-center justify-center rounded-full bg-[#2F80ED] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1f6cc7] transition-colors"
+                    >
+                      {t('nav.login')}
+                    </button>
+                    <button
+                      onClick={() => navigate('/Signup')}
+                      className="inline-flex items-center justify-center rounded-full bg-white border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      {t('nav.signUp', 'Sign Up')}
+                    </button>
+                  </div>
                 )}
               </>
             )}

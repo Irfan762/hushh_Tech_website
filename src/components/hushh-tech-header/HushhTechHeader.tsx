@@ -8,9 +8,13 @@
  */
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useBreakpointValue } from "@chakra-ui/react";
 import HushhLogo from "../brand/HushhLogo";
 import HushhTechNavDrawer from "../hushh-tech-nav-drawer/HushhTechNavDrawer";
+import LanguageSwitcher from "../LanguageSwitcher";
 import { useStockQuotes, StockQuote } from "../../hooks/useStockQuotes";
+import { useAuthSession } from "../../auth/AuthSessionProvider";
 
 /* ── Chip-based ticker component — matches Navbar design ── */
 const TickerChip = ({ quote, isLoading }: { quote: StockQuote; isLoading?: boolean }) => (
@@ -59,32 +63,116 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
   className = "",
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { t } = useTranslation();
+  const { status, signOut } = useAuthSession();
+  
+  const isDesktop = useBreakpointValue({ base: false, lg: true });
+  const isAuthenticated = status === "authenticated";
 
   // Fetch real-time stock quotes (refreshes every 2 minutes)
   const { quotes, loading: quotesLoading, lastUpdated } = useStockQuotes(120000);
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const primaryNavLinks = [
+    { path: "/", label: t('nav.home', 'Home') },
+    { path: "/about/leadership", label: t('nav.ourPhilosophy', 'Our Philosophy') },
+    { path: "/discover-fund-a", label: t('nav.fundA', 'Fund A') },
+    { path: "/community", label: t('nav.community', 'Community') },
+    { path: "/a2a-playground", label: t('nav.kycStudio', 'KYC Studio') },
+    { path: "/contact", label: t('nav.contact', 'Contact') },
+    { path: "/faq", label: t('nav.faq', 'FAQ') },
+  ];
 
   return (
     <>
       {/* Fixed header — always pinned to top */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 bg-white shadow-sm ${className}`}
+        className={`fixed top-0 left-0 right-0 z-50 bg-white shadow-sm transition-colors duration-300 ${className}`}
       >
-        {/* ── Top bar: Logo + Hamburger ── */}
-        <div className="px-6 py-4 flex justify-between items-center">
+        {/* ── Top bar: Logo + Links + Hamburger ── */}
+        <div className="px-4 lg:px-8 h-16 flex justify-between items-center">
           {/* Logo + Brand */}
-            <HushhLogo onClick={() => navigate("/")} />
+          <HushhLogo onClick={() => navigate("/")} />
 
-          {/* Hamburger menu button */}
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition-colors"
-            aria-label="Open menu"
-            tabIndex={0}
-          >
-            <span className="material-symbols-outlined text-white !text-[1.2rem]">
-              menu
-            </span>
-          </button>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-1">
+            {primaryNavLinks.map(({ path, label }) => {
+              const active = isActive(path);
+              return (
+                <button
+                  key={path}
+                  onClick={() => navigate(path)}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                    active
+                      ? 'bg-[#2F80ED]/10 text-[#1f6cc7]'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right: Utilities */}
+          <div className="flex items-center gap-3">
+            {/* Language Selector */}
+            <LanguageSwitcher variant="light" />
+
+            {/* Desktop Utility Actions */}
+            {isDesktop && (
+              <>
+                {isAuthenticated ? (
+                  <>
+                    <button
+                      onClick={() => navigate('/hushh-user-profile')}
+                      className="hidden xl:inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                      {t('nav.viewProfile', 'View Profile')}
+                    </button>
+                    <button
+                      onClick={async () => await signOut()}
+                      className="inline-flex items-center justify-center rounded-full bg-[#2F80ED] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1f6cc7] transition-colors"
+                    >
+                      {t('nav.logout', 'Log Out')}
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => navigate('/Login')}
+                      className="inline-flex items-center justify-center rounded-full bg-[#2F80ED] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1f6cc7] transition-colors"
+                    >
+                      {t('nav.login', 'Log In')}
+                    </button>
+                    <button
+                      onClick={() => navigate('/Signup')}
+                      className="inline-flex items-center justify-center rounded-full bg-white border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      {t('nav.signUp', 'Sign Up')}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Mobile Hamburger menu button */}
+            {!isDesktop && (
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-[#1c1c1e] text-white active:scale-95 transition-transform hover:bg-[#2c2c2e]"
+                aria-label="Toggle menu"
+                tabIndex={0}
+              >
+                <span className="material-symbols-outlined text-white !text-[1.2rem]">
+                  menu
+                </span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* ── Stock Ticker Strip — below header nav ── */}

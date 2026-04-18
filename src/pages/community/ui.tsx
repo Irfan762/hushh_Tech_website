@@ -6,7 +6,7 @@
  */
 import { Link } from "react-router-dom";
 import { useCommunityListLogic } from "./logic";
-import HushhTechBackHeader from "../../components/hushh-tech-back-header/HushhTechBackHeader";
+import HushhTechHeader from "../../components/hushh-tech-header/HushhTechHeader";
 import HushhTechFooter, {
   HushhFooterTab,
 } from "../../components/hushh-tech-footer/HushhTechFooter";
@@ -44,10 +44,7 @@ export default function CommunityPage() {
   return (
     <div className="bg-white text-gray-900 min-h-screen antialiased flex flex-col selection:bg-hushh-blue selection:text-white">
       {/* ═══ Header ═══ */}
-      <HushhTechBackHeader
-        onBackClick={handleBackClick}
-        rightType="hamburger"
-      />
+      <HushhTechHeader />
 
       {/* ═══ Main ═══ */}
       <main className="px-6 flex-grow max-w-md mx-auto w-full pb-32">
