@@ -24,6 +24,8 @@ import {
   Divider,
   Icon,
   Badge,
+  Flex,
+  SimpleGrid,
   InputGroup,
   InputLeftAddon,
 } from '@chakra-ui/react';
@@ -108,9 +110,10 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
     <Box
       minH="100vh"
       bg="white"
-      py={8}
+      py={{ base: 4, md: 8 }}
+      px={{ base: 4, md: 8, lg: 12 }}
     >
-      <Container maxW="lg">
+      <Container maxW="7xl">
         {/* Header */}
         <VStack spacing={2} mb={8} textAlign="center">
           <Badge
@@ -141,7 +144,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
           border="1px solid"
           borderColor="gray.200"
           borderRadius="2xl"
-          p={6}
+          p={{ base: 4, md: 8 }}
           boxShadow="sm"
         >
           <VStack spacing={6} align="stretch">
@@ -199,7 +202,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
                 2. User to Verify
               </Text>
 
-              <VStack spacing={4}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 {/* Full Name */}
                 <FormControl>
                   <FormLabel color="gray.700" fontSize="sm">
@@ -224,7 +227,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
                   <FormLabel color="gray.700" fontSize="sm">
                     Phone Number
                   </FormLabel>
-                  <HStack>
+                  <Flex direction={{ base: 'column', sm: 'row' }} gap={2}>
                     <Select
                       value={user.phoneCountryCode}
                       onChange={(e) => setUser({ ...user, phoneCountryCode: e.target.value })}
@@ -232,7 +235,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
                       border="1px solid"
                       borderColor="gray.300"
                       color="black"
-                      w="140px"
+                      w={{ base: 'full', sm: '140px' }}
                       _hover={{ borderColor: 'purple.500' }}
                       _focus={{ borderColor: 'purple.500', boxShadow: '0 0 0 1px #805AD5' }}
                     >
@@ -246,6 +249,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
                       ))}
                     </Select>
                     <Input
+                      flex={1}
                       value={user.phoneNumber}
                       onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
                       placeholder="Phone number"
@@ -257,7 +261,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
                       _hover={{ borderColor: 'purple.500' }}
                       _focus={{ borderColor: 'purple.500', boxShadow: '0 0 0 1px #805AD5' }}
                     />
-                  </HStack>
+                  </Flex>
                 </FormControl>
 
                 {/* Country */}
@@ -330,7 +334,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
                     </Text>
                   </FormControl>
                 )}
-              </VStack>
+              </SimpleGrid>
             </Box>
 
             <Divider borderColor="gray.200" />
@@ -348,7 +352,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
                 3. What should agents do?
               </Text>
 
-              <VStack align="stretch" spacing={3}>
+              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
                 <Checkbox
                   isChecked={operations.verifyKycStatus}
                   onChange={(e) => setOperations({ 
@@ -405,7 +409,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
                     </Text>
                   </VStack>
                 </Checkbox>
-              </VStack>
+              </SimpleGrid>
             </Box>
 
             <Divider borderColor="gray.200" />

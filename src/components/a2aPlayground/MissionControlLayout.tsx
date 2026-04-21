@@ -75,38 +75,40 @@ export const MissionControlLayout: React.FC<MissionControlLayoutProps> = ({
       minH="100vh"
       bg="gray.900"
       color="white"
-      p={{ base: 2, md: 4 }}
+      py={{ base: 4, md: 8 }}
+      px={{ base: 4, md: 8, lg: 12 }}
     >
-      {/* Header */}
-      <HStack
-        justify="space-between"
-        mb={4}
-        p={4}
-        bg="blackAlpha.600"
-        borderRadius="lg"
-        border="1px solid"
-        borderColor="gray.700"
-      >
-        <HStack spacing={4}>
-          <Heading size="md" fontFamily="mono" color="green.400">
-            🛡️ MISSION CONTROL
-          </Heading>
-          <Badge colorScheme="green" variant="subtle" fontSize="xs">
-            A2A PROTOCOL v1.0
-          </Badge>
+      <Container maxW="7xl" p={0} h="full">
+        {/* Header */}
+        <HStack
+          justify="space-between"
+          mb={4}
+          p={4}
+          bg="blackAlpha.600"
+          borderRadius="lg"
+          border="1px solid"
+          borderColor="gray.700"
+        >
+          <HStack spacing={4}>
+            <Heading size="md" fontFamily="mono" color="green.400">
+              🛡️ MISSION CONTROL
+            </Heading>
+            <Badge colorScheme="green" variant="subtle" fontSize="xs">
+              A2A PROTOCOL v1.0
+            </Badge>
+          </HStack>
+          <HStack spacing={4}>
+            <EncryptionBadge isActive={isProcessing} />
+            <ConnectionStatus agents={agents} />
+          </HStack>
         </HStack>
-        <HStack spacing={4}>
-          <EncryptionBadge isActive={isProcessing} />
-          <ConnectionStatus agents={agents} />
-        </HStack>
-      </HStack>
 
-      {/* Main 3-pane layout */}
-      <Grid
-        templateColumns={{ base: '1fr', lg: '280px 1fr 320px' }}
-        gap={4}
-        h={{ base: 'auto', lg: 'calc(100vh - 140px)' }}
-      >
+        {/* Main 3-pane layout */}
+        <Grid
+          templateColumns={{ base: '1fr', lg: '280px 1fr 320px' }}
+          gap={4}
+          h={{ base: 'auto', lg: 'calc(100vh - 180px)' }}
+        >
         {/* Left Pane - Agent Network */}
         {!isMobile && (
           <GridItem>
@@ -281,7 +283,8 @@ export const MissionControlLayout: React.FC<MissionControlLayoutProps> = ({
             )}
           </VStack>
         </GridItem>
-      </Grid>
+        </Grid>
+      </Container>
     </Box>
   );
 };

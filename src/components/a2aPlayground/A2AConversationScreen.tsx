@@ -506,9 +506,10 @@ const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
     <Box
       minH="100vh"
       bg="gray.900"
-      py={4}
+      py={{ base: 4, md: 8 }}
+      px={{ base: 2, sm: 4, md: 8 }}
     >
-      <Container maxW="6xl">
+      <Container maxW="7xl">
         {/* Header */}
         <VStack spacing={2} mb={4} textAlign="center">
           <HStack>

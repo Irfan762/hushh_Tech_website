@@ -124,10 +124,10 @@ const A2AResultSummaryScreen: React.FC<A2AResultSummaryProps> = ({
     <Box
       minH="100vh"
       bg="white"
-      py={8}
-      px={{ base: 4, md: 8 }}
+      py={{ base: 4, md: 8 }}
+      px={{ base: 4, md: 8, lg: 12 }}
     >
-      <VStack spacing={8} maxW="1200px" mx="auto">
+      <VStack spacing={8} maxW="7xl" mx="auto">
         {/* Header */}
         <VStack spacing={2} textAlign="center" animation={`${fadeIn} 0.5s ease-out`}>
           <Text
