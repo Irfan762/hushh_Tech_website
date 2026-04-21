@@ -62,6 +62,12 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+        // Don't proxy source files that the frontend imports directly (e.g., shared types/models)
+        bypass: function (req, _res, _options) {
+          if (req.url && (req.url.endsWith('.js') || req.url.endsWith('.ts'))) {
+            return req.url;
+          }
+        }
       },
     },
   },

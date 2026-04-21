@@ -148,7 +148,7 @@ const HushhTechFooter: React.FC<HushhTechFooterProps> = ({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-4 pointer-events-none ${className}`}
+      className={`fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-4 pointer-events-none md:hidden ${className}`}
     >
       <div className="relative max-w-md mx-auto pointer-events-auto">
         <div className="h-[72px] bg-[#050505] rounded-[2rem] flex items-center px-5 relative shadow-2xl">

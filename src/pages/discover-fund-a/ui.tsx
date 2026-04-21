@@ -9,7 +9,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDiscoverFundALogic } from "./logic";
-import HushhTechBackHeader from "../../components/hushh-tech-back-header/HushhTechBackHeader";
+import HushhTechHeader from "../../components/hushh-tech-header/HushhTechHeader";
 import HushhTechCta, {
   HushhTechCtaVariant,
 } from "../../components/hushh-tech-cta/HushhTechCta";
@@ -154,13 +154,10 @@ const FundA = () => {
   return (
     <div className="bg-white text-gray-900 min-h-screen antialiased flex flex-col selection:bg-hushh-blue selection:text-white">
       {/* ═══ Header ═══ */}
-      <HushhTechBackHeader
-        onBackClick={() => navigate("/")}
-        rightType="hamburger"
-      />
+      <HushhTechHeader />
 
       {/* ═══ Main ═══ */}
-      <main className="px-6 flex-grow max-w-md mx-auto w-full pb-32">
+      <main className="px-6 flex-grow max-w-md md:max-w-5xl mx-auto w-full pb-32 md:px-12">
         {/* ── Hero ── */}
         <section className="pt-6 pb-8">
           {/* pill badge */}
@@ -179,14 +176,14 @@ const FundA = () => {
             <span className="text-gray-400 italic font-light">{heroSubtitle}</span>
           </h1>
 
-          <p className="text-[13px] text-gray-400 font-light mt-4 leading-relaxed max-w-xs">
+          <p className="text-[13px] text-gray-400 font-light mt-4 leading-relaxed max-w-xs md:max-w-xl">
             {heroDescription}
           </p>
         </section>
 
         {/* ── Target IRR (premium black card — like step-1 share class) ── */}
         <section className="mb-8">
-          <div className="bg-ios-dark rounded-2xl p-6 text-center relative overflow-hidden">
+          <div className="bg-ios-dark rounded-2xl p-6 text-center relative overflow-hidden md:max-w-2xl">
             {/* subtle glow */}
             <div className="absolute -top-8 -right-8 w-32 h-32 bg-hushh-blue/15 rounded-full blur-2xl" />
             <div className="relative z-10">
@@ -211,7 +208,7 @@ const FundA = () => {
 
         {/* ── Investment Philosophy ── */}
         <SectionLabel>{philosophySectionTitle}</SectionLabel>
-        <div className="space-y-3 mb-2">
+        <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 mb-2">
           {philosophyCards.map((card) => (
             <FeatureCard
               key={card.title}
@@ -236,7 +233,7 @@ const FundA = () => {
           </a>{" "}
           Framework
         </SectionLabel>
-        <div className="space-y-3 mb-2">
+        <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 mb-2">
           {edgeCards.map((card) => (
             <FeatureCard
               key={card.title}
@@ -253,7 +250,7 @@ const FundA = () => {
         <p className="text-[11px] text-gray-400 font-light leading-relaxed mb-4">
           {assetFocusDescription}
         </p>
-        <div className="space-y-3 mb-2">
+        <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 mb-2">
           {assetPillars.map((pillar) => (
             <FeatureCard
               key={pillar.title}
@@ -270,7 +267,7 @@ const FundA = () => {
         <p className="text-[10px] text-gray-400 italic mb-1">
           {alphaStackSubtitle}
         </p>
-        <div className="mb-2">
+        <div className="mb-2 md:max-w-3xl md:mx-auto">
           {alphaStackRows.map((row) =>
             row.isTotalRow ? (
               <div
@@ -299,7 +296,7 @@ const FundA = () => {
 
         {/* ── Risk Management ── */}
         <SectionLabel>{riskSectionTitle}</SectionLabel>
-        <div className="space-y-3 mb-2">
+        <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 md:gap-4 mb-2">
           {riskCards.map((card) => (
             <FeatureCard
               key={card.title}
@@ -318,7 +315,7 @@ const FundA = () => {
         </p>
 
         {/* First terms as FieldRows */}
-        <div className="mb-4">
+        <div className="mb-4 md:max-w-3xl md:mx-auto">
           {keyTerms.slice(0, 2).map((term) => (
             <FieldRow key={term.title} label={term.title}>
               <span className="text-[12px] font-medium text-black max-w-[180px] text-right leading-snug">
@@ -330,7 +327,7 @@ const FundA = () => {
 
         {/* Share Classes (compact cards) */}
         <SectionLabel>Share Classes</SectionLabel>
-        <div className="space-y-3 mb-4">
+        <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-3 md:gap-4 mb-4">
           {shareClasses.map((sc) => (
             <div
               key={sc.shareClass}
@@ -382,7 +379,7 @@ const FundA = () => {
         </div>
 
         {/* Remaining terms */}
-        <div className="mb-6">
+        <div className="mb-6 md:max-w-3xl md:mx-auto">
           {keyTerms.slice(2).map((term) => (
             <FieldRow key={term.title} label={term.title}>
               <span className="text-[12px] font-medium text-black max-w-[180px] text-right leading-snug">
@@ -400,11 +397,11 @@ const FundA = () => {
           >
             {joinSectionTitle}
           </h2>
-          <p className="text-[13px] text-gray-400 font-light leading-relaxed mb-8 max-w-xs">
+          <p className="text-[13px] text-gray-400 font-light leading-relaxed mb-8 max-w-xs md:max-w-xl">
             {joinSectionDescription}
           </p>
 
-          <div className="space-y-3">
+          <div className="space-y-3 md:space-y-0 md:flex md:gap-4 items-center">
             <HushhTechCta
               variant={HushhTechCtaVariant.BLACK}
               onClick={handleCompleteProfile}

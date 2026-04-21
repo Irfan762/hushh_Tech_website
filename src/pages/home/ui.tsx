@@ -36,8 +36,8 @@ export default function HomePage() {
       {/* ═══ Header (fixed to top with ticker) ═══ */}
       <HushhTechHeader />
 
-      {/* ═══ Main Content — max-w-md centered like all other pages ═══ */}
-      <main className="flex-1 px-6 pb-32 flex flex-col gap-12 pt-4 max-w-md mx-auto w-full">
+      {/* ═══ Main Content ═══ */}
+      <main className="flex-1 px-6 pb-32 flex flex-col gap-12 pt-4 max-w-md md:max-w-6xl mx-auto w-full md:px-12">
 
         {/* ── Hero ── */}
         <section className="py-4">
@@ -61,7 +61,7 @@ export default function HomePage() {
         </section>
 
         {/* ── Feature Cards (AI-Powered / Human-Led) ── */}
-        <section className="grid grid-cols-2 gap-4">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
           <div className="bg-ios-gray-bg p-5 rounded-2xl border border-gray-200/60 flex flex-col justify-between min-h-[180px] hover:border-hushh-blue/30 transition-colors">
             <span className="material-symbols-outlined thin-icon text-3xl mb-4 text-hushh-blue">
               neurology
@@ -97,7 +97,7 @@ export default function HomePage() {
         </section>
 
         {/* ── Primary CTAs ── */}
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col md:flex-row md:items-center gap-3">
           <HushhTechCta
             onClick={primaryCTA.action}
             disabled={primaryCTA.loading}
@@ -144,7 +144,7 @@ export default function HomePage() {
           >
             The Hushh Advantage
           </h2>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-10">
             {[
               { icon: "analytics", color: "text-hushh-blue", bg: "bg-hushh-blue/10", title: "Data Driven", desc: "Decisions based on facts, not emotions." },
               { icon: "savings", color: "text-ios-green", bg: "bg-ios-green/10", title: "Low Fees", desc: "More of your returns stay in your pocket." },
@@ -168,7 +168,7 @@ export default function HomePage() {
 
         {/* ── Fund A Card ── */}
         <section className="relative mt-4">
-          <div className="bg-ios-dark text-white p-8 rounded-2xl relative overflow-hidden shadow-2xl">
+          <div className="bg-ios-dark text-white p-8 rounded-2xl relative overflow-hidden shadow-2xl md:max-w-2xl">
             {/* Glow effects — Apple blue accent */}
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-hushh-blue/15 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-hushh-blue/5 to-transparent" />
@@ -225,7 +225,7 @@ export default function HomePage() {
 
         {/* ── Feature Grid ── */}
         <section>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { icon: "rocket_launch", color: "text-hushh-blue", title: "High Growth", desc: "Accelerated returns strategy" },
               { icon: "pie_chart", color: "text-ios-yellow", title: "Diversified", desc: "Multi-sector allocation" },
@@ -246,7 +246,7 @@ export default function HomePage() {
         </section>
 
         {/* ── Bottom CTAs ── */}
-        <section className="flex flex-col gap-3 py-6">
+        <section className="flex flex-col md:flex-row md:items-center gap-3 py-6">
           <HushhTechCta
             onClick={() => onNavigate("/discover-fund-a")}
             variant={HushhTechCtaVariant.BLACK}

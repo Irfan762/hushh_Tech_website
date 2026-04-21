@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from "react";
 import {
   Box,
@@ -18,12 +16,14 @@ import {
   Input,
   Flex,
   Checkbox,
-  Textarea,
 } from "@chakra-ui/react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { requestFileAccess } from "../services/access/accessControlApi";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 interface NDARequestModalProps {
   session: any; // Contains the logged-in user's session (including access_token)
@@ -35,23 +35,55 @@ interface NDARequestModalProps {
 // Format a given phone number string into international format with a space between the country code and the rest.
 // If the number does not start with a '+', one is added. Then, using libphonenumber-js, we format it.
 const formatPhoneNumber = (phone: string): string => {
-  // Ensure the number starts with a plus sign.
   if (!phone.startsWith("+")) {
     phone = `+${phone}`;
   }
   const phoneNumber = parsePhoneNumberFromString(phone);
   if (phoneNumber) {
-    // formatInternational() returns a string like "+91 9876543210"
     return phoneNumber.formatInternational();
   }
   return phone;
 };
 
-// Basic email validation regex
-const validateEmail = (email: string) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-};
+// Zod Schemas
+const individualSchema = z.object({
+  investorType: z.literal("Individual"),
+  name: z.string().min(1, "Full Name is required."),
+  state: z.string().min(1, "State for taxation is required."),
+  city: z.string().min(1, "City for taxation is required."),
+  country: z.string().min(1, "Country for taxation is required."),
+  individual_address: z.string().min(1, "Residential Address is required."),
+  legal_email: z.string().email("Invalid email format."),
+  mobile_telephone: z.string().min(4, "Mobile Telephone is required."),
+});
+
+const organisationSchema = z.object({
+  investorType: z.literal("Organisation"),
+  company_name: z.string().min(1, "Company Name is required."),
+  state_of_incorporation: z.string().min(1, "State of Incorporation is required."),
+  company_address: z.string().optional(),
+  company_email: z.string().email("Invalid company email format."),
+  contact_person_name: z.string().min(1, "Contact Person Name is required."),
+  contact_person_title: z.string().min(1, "Contact Person Title is required."),
+  contact_person_email: z.string().email("Invalid contact person email format."),
+  contact_person_telephone: z.string().min(4, "Contact Person Telephone is required."),
+});
+
+const finalSchema = z.discriminatedUnion("investorType", [
+  individualSchema,
+  organisationSchema,
+]).and(
+  z.object({
+    ndaConfirmed: z.literal(true, {
+      errorMap: () => ({ message: "You must confirm you have read the NDA." }),
+    }),
+    ndaTermsAccepted: z.literal(true, {
+      errorMap: () => ({ message: "You must accept the terms." }),
+    }),
+  })
+);
+
+type FormSchemaType = z.infer<typeof finalSchema>;
 
 const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
   session,
@@ -60,73 +92,61 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
   onClose,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [investorType, setInvestorType] = useState("Individual");
-  const [metadata, setMetadata] = useState<any>({});
-  const [formErrors, setFormErrors] = useState<any>({});
-  const [ndaConfirmed, setNdaConfirmed] = useState(false);
-  const [ndaTermsAccepted, setNdaTermsAccepted] = useState(false);
-  const [showNdaDocModal, setShowNdaDocModal] = useState(false);
   const toast = useToast();
 
-  // Handle modal close if component is used as a modal
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    trigger,
+    clearErrors,
+    formState: { errors },
+  } = useForm<FormSchemaType>({
+    resolver: zodResolver(finalSchema),
+    mode: "onTouched",
+    defaultValues: {
+      investorType: "Individual",
+      ndaConfirmed: undefined,
+      ndaTermsAccepted: undefined,
+    } as any,
+  });
+
+  const investorType = watch("investorType");
+  const watchAllFields = watch();
+
   const handleClose = () => {
     if (onClose) {
       onClose();
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setMetadata((prev: any) => ({ ...prev, [field]: value }));
-    // Clear error for the field being changed
-    if (formErrors[field]) {
-      setFormErrors((prevErrors: any) => ({ ...prevErrors, [field]: null }));
-    }
-  };
-
-  const validateStep1 = () => {
-    const errors: any = {};
-    if (investorType === "Individual") {
-      if (!metadata.name?.trim()) errors.name = "Full Name is required.";
-      if (!metadata.state?.trim()) errors.state = "State for taxation is required.";
-      if (!metadata.city?.trim()) errors.city = "City for taxation is required.";
-      if (!metadata.country?.trim()) errors.country = "Country for taxation is required.";
-      if (!metadata.individual_address?.trim()) errors.individual_address = "Residential Address is required.";
-      if (!metadata.legal_email?.trim()) {
-        errors.legal_email = "Legal Email is required.";
-      } else if (!validateEmail(metadata.legal_email)) {
-        errors.legal_email = "Invalid email format.";
-      }
-      // For PhoneInput, check if the value (which includes country code) is more than just the country code or empty
-      if (!metadata.mobile_telephone || metadata.mobile_telephone.length <= 3) { // Basic check, adjust length as needed for country codes
-        errors.mobile_telephone = "Mobile Telephone is required.";
-      }
-    } else if (investorType === "Organisation") {
-      if (!metadata.company_name?.trim()) errors.company_name = "Company Name is required.";
-      if (!metadata.state_of_incorporation?.trim()) errors.state_of_incorporation = "State of Incorporation is required.";
-      // company_address is optional
-      if (!metadata.company_email?.trim()) {
-        errors.company_email = "Company Email is required.";
-      } else if (!validateEmail(metadata.company_email)) {
-        errors.company_email = "Invalid company email format.";
-      }
-      if (!metadata.contact_person_name?.trim()) errors.contact_person_name = "Contact Person Name is required.";
-      if (!metadata.contact_person_title?.trim()) errors.contact_person_title = "Contact Person Title is required.";
-      if (!metadata.contact_person_email?.trim()) {
-        errors.contact_person_email = "Contact Person Email is required.";
-      } else if (!validateEmail(metadata.contact_person_email)) {
-        errors.contact_person_email = "Invalid contact person email format.";
-      }
-      if (!metadata.contact_person_telephone || metadata.contact_person_telephone.length <= 3) {
-        errors.contact_person_telephone = "Contact Person Telephone is required.";
-      }
-    }
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const goToStep = (step: number) => {
+  const goToStep = async (step: number) => {
     if (step === 2) {
-      if (!validateStep1()) {
+      const fieldsToValidate =
+        investorType === "Individual"
+          ? [
+              "name",
+              "state",
+              "city",
+              "country",
+              "individual_address",
+              "legal_email",
+              "mobile_telephone",
+            ]
+          : [
+              "company_name",
+              "state_of_incorporation",
+              "company_email",
+              "contact_person_name",
+              "contact_person_title",
+              "contact_person_email",
+              "contact_person_telephone",
+            ];
+            
+      const isStepValid = await trigger(fieldsToValidate as any);
+      
+      if (!isStepValid) {
         toast({
           title: "Validation Error",
           description: "Please correct the errors in the form before proceeding.",
@@ -140,30 +160,22 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
     setCurrentStep(step);
   };
 
-  const handleSubmit = async () => {
-    // Ensure Step 1 was valid (though goToStep should have caught this)
-    if (!validateStep1() && currentStep === 1) { // Should not happen if goToStep(2) was used
-        toast({ title: "Error", description: "Please complete investor profile first.", status: "error" });
-        setCurrentStep(1); // Force back to step 1
-        return;
-    }
-    if (!ndaConfirmed || !ndaTermsAccepted) {
-        toast({ title: "NDA Acceptance Required", description: "Please confirm and accept NDA terms.", status: "warning" });
-        return;
+  const onSubmitForm = async (data: FormSchemaType) => {
+    if (currentStep === 1) {
+      toast({ title: "Error", description: "Please complete investor profile first.", status: "error" });
+      return;
     }
 
-    console.log("Submitting NDA Request with metadata:", metadata);
-    const formattedMetadata = { ...metadata };
+    const { investorType, ndaConfirmed, ndaTermsAccepted, ...metadata } = data;
+    const formattedMetadata: any = { ...metadata };
+    
     if (formattedMetadata.mobile_telephone) {
-      formattedMetadata.mobile_telephone = formatPhoneNumber(
-        formattedMetadata.mobile_telephone
-      );
+      formattedMetadata.mobile_telephone = formatPhoneNumber(formattedMetadata.mobile_telephone);
     }
     if (formattedMetadata.contact_person_telephone) {
-      formattedMetadata.contact_person_telephone = formatPhoneNumber(
-        formattedMetadata.contact_person_telephone
-      );
+      formattedMetadata.contact_person_telephone = formatPhoneNumber(formattedMetadata.contact_person_telephone);
     }
+
     try {
       const resData = await requestFileAccess(session.access_token, {
         investorType,
@@ -172,12 +184,9 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
 
       console.log("Request Access Response:", resData);
       
-      // Toast messages based on response (existing logic)
       if (resData === "Approved" || (typeof resData === "string" && resData.startsWith("Requested permission"))) {
         toast({ title: "Request Submitted", description: "Your access request has been sent and is pending approval.", status: "success", duration: 4000, isClosable: true });
-        window.location.href = "/"; // Or a more appropriate page
-        
-        // Close modal if applicable after successful submission
+        window.location.href = "/";
         handleClose();
       } else if (resData === "Rejected") {
         toast({ title: "Request Rejected", description: "Your request was rejected. Please re-apply after 2-3 days.", status: "error", duration: 4000, isClosable: true });
@@ -192,18 +201,12 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
           duration: 4000, 
           isClosable: true 
         });
-        
-        // Pass the metadata for NDA generation and open NDA Document Modal
-        onSubmit(resData); // First notify parent component of the status change
-        
-        // Redirect to profile page where NDA document modal can be shown
-        // The profile page will handle showing the NDA document modal based on the status
+        onSubmit(resData);
         window.location.href = "/profile";
       } else {
         toast({ title: "Unexpected Response", description: `Received: ${resData}`, status: "error", duration: 4000, isClosable: true });
         onSubmit(resData);
       }
-
     } catch (error: any) {
       console.error("Error submitting request:", error);
       const errorMessage = error.response?.data?.message || error.response?.data || "Could not submit your NDA request.";
@@ -221,29 +224,17 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
     return (
       <Flex justify="center" align="center" my={8}>
         <Box 
-          w="40px" 
-          h="40px" 
-          borderRadius="full" 
+          w="40px" h="40px" borderRadius="full" 
           background={currentStep >= 1 ? "linear-gradient(to right, #00A9E0, #6DD3EF)" : "gray.200"}
-          color="white" 
-          display="flex" 
-          alignItems="center" 
-          justifyContent="center" 
-          fontWeight="500"
+          color="white" display="flex" alignItems="center" justifyContent="center" fontWeight="500"
         >
           1
         </Box>
         <Box w="60px" h="1px" bg={currentStep >= 2 ? "#1CADBC" : "gray.200"} />
         <Box 
-          w="40px" 
-          h="40px" 
-          borderRadius="full" 
+          w="40px" h="40px" borderRadius="full" 
           background={currentStep >= 2 ? "linear-gradient(to right, #00A9E0, #6DD3EF)" : "gray.200"} 
-          color="white" 
-          display="flex" 
-          alignItems="center" 
-          justifyContent="center" 
-          fontWeight="500"
+          color="white" display="flex" alignItems="center" justifyContent="center" fontWeight="500"
         >
           2
         </Box>
@@ -256,12 +247,25 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
       <VStack spacing={6} align="stretch" w="100%" maxW="600px" mx="auto">
         <FormControl isRequired>
           <FormLabel fontWeight="medium" fontSize={'xl'} color="gray.700">Investor Type</FormLabel>
-          <RadioGroup onChange={(value) => { setInvestorType(value); setMetadata({}); setFormErrors({}); }} value={investorType} mt={2}>
-            <HStack spacing={6}>
-              <Radio value="Individual" colorScheme="cyan" size="md"><Text ml={1}>Individual</Text></Radio>
-              <Radio value="Organisation" colorScheme="cyan" size="md"><Text ml={1}>Organisation</Text></Radio>
-            </HStack>
-          </RadioGroup>
+          <Controller
+            name="investorType"
+            control={control}
+            render={({ field }) => (
+              <RadioGroup 
+                {...field} 
+                onChange={(val) => {
+                  field.onChange(val);
+                  clearErrors();
+                }} 
+                mt={2}
+              >
+                <HStack spacing={6}>
+                  <Radio value="Individual" colorScheme="cyan" size="md"><Text ml={1}>Individual</Text></Radio>
+                  <Radio value="Organisation" colorScheme="cyan" size="md"><Text ml={1}>Organisation</Text></Radio>
+                </HStack>
+              </RadioGroup>
+            )}
+          />
         </FormControl>
 
         {investorType === "Individual" ? (
@@ -269,44 +273,50 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
             <Heading as="h3" size="md" fontWeight="medium" color="gray.800" mt={6} mb={4}>Individual Information</Heading>
             <VStack spacing={4} align="stretch">
               <HStack spacing={4}>
-                <FormControl isRequired isInvalid={!!formErrors.name}>
+                <FormControl isRequired isInvalid={!!errors.name}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Full Name</FormLabel>
-                  <Input size="md" placeholder="Enter your full name" value={metadata.name || ''} onChange={(e) => handleInputChange("name", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.name}</FormErrorMessage>
+                  <Input size="md" placeholder="Enter your full name" {...register("name")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).name?.message}</FormErrorMessage>
                 </FormControl>
-                <FormControl isRequired isInvalid={!!formErrors.state}>
+                <FormControl isRequired isInvalid={!!errors.state}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">State Registered for Taxation</FormLabel>
-                  <Input size="md" placeholder="Enter your state for taxation" value={metadata.state || ''} onChange={(e) => handleInputChange("state", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.state}</FormErrorMessage>
+                  <Input size="md" placeholder="Enter your state for taxation" {...register("state")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).state?.message}</FormErrorMessage>
                 </FormControl>
               </HStack>
               <HStack spacing={4}>
-                <FormControl isRequired isInvalid={!!formErrors.city}>
+                <FormControl isRequired isInvalid={!!errors.city}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">City Registered for Taxation</FormLabel>
-                  <Input size="md" placeholder="Enter your city for taxation" value={metadata.city || ''} onChange={(e) => handleInputChange("city", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.city}</FormErrorMessage>
+                  <Input size="md" placeholder="Enter your city for taxation" {...register("city")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).city?.message}</FormErrorMessage>
                 </FormControl>
-                <FormControl isRequired isInvalid={!!formErrors.country}>
+                <FormControl isRequired isInvalid={!!errors.country}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Country Registered for Taxation</FormLabel>
-                  <Input size="md" placeholder="Enter your country for taxation" value={metadata.country || ''} onChange={(e) => handleInputChange("country", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.country}</FormErrorMessage>
+                  <Input size="md" placeholder="Enter your country for taxation" {...register("country")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).country?.message}</FormErrorMessage>
                 </FormControl>
               </HStack>
-              <FormControl isRequired isInvalid={!!formErrors.individual_address}>
+              <FormControl isRequired isInvalid={!!errors.individual_address}>
                 <FormLabel className="text-lg font-medium text-[#1D1D1F]">Residential Address</FormLabel>
-                <Input size="md" placeholder="Enter your address" value={metadata.individual_address || ''} onChange={(e) => handleInputChange("individual_address", e.target.value)} borderColor="gray.300" bg="white" />
-                <FormErrorMessage>{formErrors.individual_address}</FormErrorMessage>
+                <Input size="md" placeholder="Enter your address" {...register("individual_address")} borderColor="gray.300" bg="white" />
+                <FormErrorMessage>{(errors as any).individual_address?.message}</FormErrorMessage>
               </FormControl>
               <HStack spacing={4}>
-                <FormControl isRequired isInvalid={!!formErrors.legal_email}>
+                <FormControl isRequired isInvalid={!!errors.legal_email}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Legal Email</FormLabel>
-                  <Input size="md" type="email" placeholder="Enter your legal email" value={metadata.legal_email || ''} onChange={(e) => handleInputChange("legal_email", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.legal_email}</FormErrorMessage>
+                  <Input size="md" type="email" placeholder="Enter your legal email" {...register("legal_email")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).legal_email?.message}</FormErrorMessage>
                 </FormControl>
-                <FormControl isRequired isInvalid={!!formErrors.mobile_telephone}>
+                <FormControl isRequired isInvalid={!!(errors as any).mobile_telephone}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Mobile Telephone</FormLabel>
-                  <PhoneInput country={"in"} value={metadata.mobile_telephone || ""} onChange={(phone) => handleInputChange("mobile_telephone", phone)} inputStyle={{ width: "100%", height: "40px", fontSize: "1rem", borderColor: "#E2E8F0", backgroundColor: "white" }} containerStyle={{ width: "100%" }} />
-                  <FormErrorMessage>{formErrors.mobile_telephone}</FormErrorMessage>
+                  <Controller
+                    name="mobile_telephone"
+                    control={control}
+                    render={({ field }) => (
+                      <PhoneInput country={"us"} value={field.value || ""} onChange={field.onChange} inputStyle={{ width: "100%", height: "40px", fontSize: "1rem", borderColor: "#E2E8F0", backgroundColor: "white" }} containerStyle={{ width: "100%" }} />
+                    )}
+                  />
+                  <FormErrorMessage>{(errors as any).mobile_telephone?.message}</FormErrorMessage>
                 </FormControl>
               </HStack>
             </VStack>
@@ -316,51 +326,57 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
             <Heading as="h3" size="md" fontWeight="medium" color="gray.800" mt={6} mb={4}>Organisation Information</Heading>
             <VStack spacing={4} align="stretch">
               <HStack spacing={4}>
-                <FormControl isRequired isInvalid={!!formErrors.company_name}>
+                <FormControl isRequired isInvalid={!!(errors as any).company_name}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Company Name</FormLabel>
-                  <Input size="md" placeholder="Enter company name" value={metadata.company_name || ''} onChange={(e) => handleInputChange("company_name", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.company_name}</FormErrorMessage>
+                  <Input size="md" placeholder="Enter company name" {...register("company_name")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).company_name?.message}</FormErrorMessage>
                 </FormControl>
-                <FormControl isRequired isInvalid={!!formErrors.state_of_incorporation}>
+                <FormControl isRequired isInvalid={!!(errors as any).state_of_incorporation}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">State of Incorporation</FormLabel>
-                  <Input size="md" placeholder="Enter state of incorporation" value={metadata.state_of_incorporation || ''} onChange={(e) => handleInputChange("state_of_incorporation", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.state_of_incorporation}</FormErrorMessage>
+                  <Input size="md" placeholder="Enter state of incorporation" {...register("state_of_incorporation")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).state_of_incorporation?.message}</FormErrorMessage>
                 </FormControl>
               </HStack>
-              <FormControl isInvalid={!!formErrors.company_address}> {/* Not required, but can still have other validation if needed */}
+              <FormControl isInvalid={!!(errors as any).company_address}>
                 <FormLabel className="text-lg font-medium text-[#1D1D1F]">Company Address</FormLabel>
-                <Input size="md" placeholder="Enter company address" value={metadata.company_address || ''} onChange={(e) => handleInputChange("company_address", e.target.value)} borderColor="gray.300" bg="white" />
-                <FormErrorMessage>{formErrors.company_address}</FormErrorMessage>
+                <Input size="md" placeholder="Enter company address" {...register("company_address")} borderColor="gray.300" bg="white" />
+                <FormErrorMessage>{(errors as any).company_address?.message}</FormErrorMessage>
               </FormControl>
-              <FormControl isRequired isInvalid={!!formErrors.company_email}>
+              <FormControl isRequired isInvalid={!!(errors as any).company_email}>
                 <FormLabel className="text-lg font-medium text-[#1D1D1F]">Company Email</FormLabel>
-                <Input size="md" type="email" placeholder="Enter company email" value={metadata.company_email || ''} onChange={(e) => handleInputChange("company_email", e.target.value)} borderColor="gray.300" bg="white" />
-                <FormErrorMessage>{formErrors.company_email}</FormErrorMessage>
+                <Input size="md" type="email" placeholder="Enter company email" {...register("company_email")} borderColor="gray.300" bg="white" />
+                <FormErrorMessage>{(errors as any).company_email?.message}</FormErrorMessage>
               </FormControl>
 
               <Heading as="h3" size="md" fontWeight="medium" color="gray.800" mt={4} mb={2}>Contact Person Information</Heading>
               <HStack spacing={4}>
-                <FormControl isRequired isInvalid={!!formErrors.contact_person_name}>
+                <FormControl isRequired isInvalid={!!(errors as any).contact_person_name}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Contact Person Name</FormLabel>
-                  <Input size="md" placeholder="Enter contact person name" value={metadata.contact_person_name || ''} onChange={(e) => handleInputChange("contact_person_name", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.contact_person_name}</FormErrorMessage>
+                  <Input size="md" placeholder="Enter contact person name" {...register("contact_person_name")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).contact_person_name?.message}</FormErrorMessage>
                 </FormControl>
-                <FormControl isRequired isInvalid={!!formErrors.contact_person_title}>
+                <FormControl isRequired isInvalid={!!(errors as any).contact_person_title}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Contact Person Title</FormLabel>
-                  <Input size="md" placeholder="Enter contact person title" value={metadata.contact_person_title || ''} onChange={(e) => handleInputChange("contact_person_title", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.contact_person_title}</FormErrorMessage>
+                  <Input size="md" placeholder="Enter contact person title" {...register("contact_person_title")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).contact_person_title?.message}</FormErrorMessage>
                 </FormControl>
               </HStack>
               <HStack spacing={4}>
-                <FormControl isRequired isInvalid={!!formErrors.contact_person_email}>
+                <FormControl isRequired isInvalid={!!(errors as any).contact_person_email}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Contact Person Email</FormLabel>
-                  <Input size="md" type="email" placeholder="Enter contact person email" value={metadata.contact_person_email || ''} onChange={(e) => handleInputChange("contact_person_email", e.target.value)} borderColor="gray.300" bg="white" />
-                  <FormErrorMessage>{formErrors.contact_person_email}</FormErrorMessage>
+                  <Input size="md" type="email" placeholder="Enter contact person email" {...register("contact_person_email")} borderColor="gray.300" bg="white" />
+                  <FormErrorMessage>{(errors as any).contact_person_email?.message}</FormErrorMessage>
                 </FormControl>
-                <FormControl isRequired isInvalid={!!formErrors.contact_person_telephone}>
+                <FormControl isRequired isInvalid={!!(errors as any).contact_person_telephone}>
                   <FormLabel className="text-lg font-medium text-[#1D1D1F]">Contact Person Telephone</FormLabel>
-                  <PhoneInput country={"in"} value={metadata.contact_person_telephone || ""} onChange={(phone) => handleInputChange("contact_person_telephone", phone)} inputStyle={{ width: "100%", height: "40px", fontSize: "1rem", borderColor: "#E2E8F0", backgroundColor: "white" }} containerStyle={{ width: "100%" }} />
-                  <FormErrorMessage>{formErrors.contact_person_telephone}</FormErrorMessage>
+                  <Controller
+                    name="contact_person_telephone"
+                    control={control}
+                    render={({ field }) => (
+                      <PhoneInput country={"us"} value={field.value || ""} onChange={field.onChange} inputStyle={{ width: "100%", height: "40px", fontSize: "1rem", borderColor: "#E2E8F0", backgroundColor: "white" }} containerStyle={{ width: "100%" }} />
+                    )}
+                  />
+                  <FormErrorMessage>{(errors as any).contact_person_telephone?.message}</FormErrorMessage>
                 </FormControl>
               </HStack>
             </VStack>
@@ -385,22 +401,14 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
         </Text>
         
         <Box 
-          border="1px solid" 
-          borderColor="gray.300"
-          borderRadius="md"
-          p={4}
-          height="300px"
-          overflowY="scroll"
-          bg="white"
+          border="1px solid" borderColor="gray.300" borderRadius="md" p={4} height="300px" overflowY="scroll" bg="white"
           className="whitespace-pre-wrap text-sm text-[#1D1D1F] font-mono leading-relaxed"
         >
           <Text fontWeight="500" mb={2}>MUTUAL NON-DISCLOSURE AGREEMENT</Text>
           <Text fontSize="sm">
             Hushh Technologies and {investorType} desire to engage in discussions regarding a potential agreement or other transaction between the parties (the "Purpose"). In connection with such discussions, the parties may disclose to each other certain confidential information or materials.
           </Text>
-          <Text fontSize="sm" mt={2}>
-            In consideration of the foregoing, the parties agree as follows:
-          </Text>
+          <Text fontSize="sm" mt={2}>In consideration of the foregoing, the parties agree as follows:</Text>
           
           <Text fontSize="sm" fontWeight="500" mt={4}>1. CONFIDENTIAL INFORMATION</Text>
           <Text fontSize="sm" mt={2}>
@@ -468,83 +476,73 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
             The parties hereto have executed this Mutual Non-Disclosure Agreement by their duly authorized officers or representatives.
           </Text>
         </Box>
- {/* Digital Signature Section */}
- <Box mt={6} pt={4} borderTop="1px solid" borderColor="gray.200">
-            <Text fontSize="sm" fontWeight="500" mb={4}>Digital Signature</Text>
+        
+        {/* Digital Signature Section */}
+        <Box mt={6} pt={4} borderTop="1px solid" borderColor="gray.200">
+          <Text fontSize="sm" fontWeight="500" mb={4}>Digital Signature</Text>
+          <Flex direction={{ base: 'column', md: 'row' }} justifyContent="space-between" mb={4}>
+            <Box width={{ base: '100%', md: '48%' }} mb={{ base: 4, md: 0 }}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={1}>
+                Full Legal Name
+              </Text>
+              <Box p={2} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
+                <Text fontSize="sm">
+                  {investorType === "Individual" 
+                    ? (watchAllFields as any).name || "Not provided" 
+                    : (watchAllFields as any).contact_person_name || "Not provided"}
+                </Text>
+              </Box>
+            </Box>
             
-            <Flex direction={{ base: 'column', md: 'row' }} justifyContent="space-between" mb={4}>
-              <Box width={{ base: '100%', md: '48%' }} mb={{ base: 4, md: 0 }}>
-                <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={1}>
-                  Full Legal Name
+            <Box width={{ base: '100%', md: '48%' }}>
+              <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={1}>
+                Date
+              </Text>
+              <Box p={2} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
+                <Text fontSize="sm">
+                  {new Date().toLocaleDateString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric'
+                  })}
                 </Text>
-                <Box 
-                  p={2} 
-                  bg="gray.50" 
-                  borderRadius="md" 
-                  border="1px solid" 
-                  borderColor="gray.200"
-                >
-                  <Text fontSize="sm">
-                    {investorType === "Individual" 
-                      ? metadata.name || "Not provided" 
-                      : metadata.contact_person_name || "Not provided"}
-                  </Text>
-                </Box>
               </Box>
-              
-              <Box width={{ base: '100%', md: '48%' }}>
-                <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={1}>
-                  Date
-                </Text>
-                <Box 
-                  p={2} 
-                  bg="gray.50" 
-                  borderRadius="md" 
-                  border="1px solid" 
-                  borderColor="gray.200"
-                >
-                  <Text fontSize="sm">
-                    {new Date().toLocaleDateString('en-US', {
-                      month: '2-digit',
-                      day: '2-digit',
-                      year: 'numeric'
-                    })}
-                  </Text>
-                </Box>
-              </Box>
-            </Flex>
-          </Box>
+            </Box>
+          </Flex>
+        </Box>
           
-        <FormControl mt={4} isInvalid={!!formErrors.ndaConfirmed}>
+        <FormControl mt={4} isInvalid={!!errors.ndaConfirmed}>
           <HStack spacing={2} align="flex-start">
-            <Checkbox 
-              colorScheme="cyan"
-              size="md"
-              isChecked={ndaConfirmed}
-              onChange={(e) => {
-                setNdaConfirmed(e.target.checked);
-                if (formErrors.ndaConfirmed) setFormErrors((prev: any) => ({...prev, ndaConfirmed: null}));
-              }}
-              mt={1}
+            <Controller
+              name="ndaConfirmed"
+              control={control}
+              render={({ field }) => (
+                <Checkbox 
+                  colorScheme="cyan" size="md" mt={1}
+                  isChecked={field.value === true}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+              )}
             />
             <Text fontSize="sm" className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-lg text-[#1D1D1F] leading-relaxed">
               I confirm that I have read and reviewed the entire Non-Disclosure Agreement above.
             </Text>
           </HStack>
-          <FormErrorMessage>{formErrors.ndaConfirmed}</FormErrorMessage>
+          <FormErrorMessage>{errors.ndaConfirmed?.message}</FormErrorMessage>
         </FormControl>
 
-        <FormControl mt={2} isInvalid={!!formErrors.ndaTermsAccepted}>
+        <FormControl mt={2} isInvalid={!!errors.ndaTermsAccepted}>
           <HStack spacing={2} align="flex-start">
-            <Checkbox 
-              colorScheme="cyan"
-              size="md"
-              isChecked={ndaTermsAccepted}
-              onChange={(e) => {
-                setNdaTermsAccepted(e.target.checked);
-                if (formErrors.ndaTermsAccepted) setFormErrors((prev: any) => ({...prev, ndaTermsAccepted: null}));
-              }}
-              mt={1}
+            <Controller
+              name="ndaTermsAccepted"
+              control={control}
+              render={({ field }) => (
+                <Checkbox 
+                  colorScheme="cyan" size="md" mt={1}
+                  isChecked={field.value === true}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+              )}
             />
             <Text fontSize="sm" className="font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-lg text-[#1D1D1F] leading-relaxed">
               By checking this box and clicking "Submit NDA & Investor Profile", I acknowledge that 
@@ -553,14 +551,20 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
               information provided is true and accurate.
             </Text>
           </HStack>
-          <FormErrorMessage>{formErrors.ndaTermsAccepted}</FormErrorMessage>
+          <FormErrorMessage>{errors.ndaTermsAccepted?.message}</FormErrorMessage>
         </FormControl>
 
         <HStack spacing={4} mt={6}>
           <Button onClick={() => goToStep(1)} size="md" width="40%" py={6} borderRadius="md" bg="transparent" color="black" border="1px solid">
             Back to Profile
           </Button>
-          <Button onClick={handleSubmit} background="linear-gradient(to right, #00A9E0, #6DD3EF)" _hover={{ background: "linear-gradient(to right, #0AADBC, #1CADBC)" }} color={'white'} size="md" width="60%" py={6} borderRadius="md" isDisabled={!ndaConfirmed || !ndaTermsAccepted}>
+          <Button 
+            onClick={handleSubmit(onSubmitForm)} 
+            background="linear-gradient(to right, #00A9E0, #6DD3EF)" 
+            _hover={{ background: "linear-gradient(to right, #0AADBC, #1CADBC)" }} 
+            color={'white'} size="md" width="60%" py={6} borderRadius="md" 
+            isDisabled={!watch("ndaConfirmed") || !watch("ndaTermsAccepted")}
+          >
             Submit NDA & Investor Profile
           </Button>
         </HStack>
@@ -568,8 +572,6 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
     );
   };
 
-  // If component is used outside of a modal context, render as before
-  // If it's used as a modal, don't render when isOpen is false
   if (isOpen === false) {
     return null;
   }
