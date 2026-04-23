@@ -48,12 +48,12 @@ const formatPhoneNumber = (phone: string): string => {
 // Zod Schemas
 const individualSchema = z.object({
   investorType: z.literal("Individual"),
-  name: z.string().min(1, "Full Name is required."),
-  state: z.string().min(1, "State for taxation is required."),
-  city: z.string().min(1, "City for taxation is required."),
-  country: z.string().min(1, "Country for taxation is required."),
-  individual_address: z.string().min(1, "Residential Address is required."),
-  legal_email: z.string().email("Invalid email format."),
+  name: z.string().trim().min(1, "Full Name is required."),
+  state: z.string().trim().min(1, "State for taxation is required."),
+  city: z.string().trim().min(1, "City for taxation is required."),
+  country: z.string().trim().min(1, "Country for taxation is required."),
+  individual_address: z.string().trim().min(1, "Residential Address is required."),
+  legal_email: z.string().trim().email("Invalid email format."),
   mobile_telephone: z.string().refine((val) => {
     try {
       const phoneNumber = parsePhoneNumberFromString(val);
@@ -68,13 +68,13 @@ const individualSchema = z.object({
 
 const organisationSchema = z.object({
   investorType: z.literal("Organisation"),
-  company_name: z.string().min(1, "Company Name is required."),
-  state_of_incorporation: z.string().min(1, "State of Incorporation is required."),
-  company_address: z.string().optional(),
-  company_email: z.string().email("Invalid company email format."),
-  contact_person_name: z.string().min(1, "Contact Person Name is required."),
-  contact_person_title: z.string().min(1, "Contact Person Title is required."),
-  contact_person_email: z.string().email("Invalid contact person email format."),
+  company_name: z.string().trim().min(1, "Company Name is required."),
+  state_of_incorporation: z.string().trim().min(1, "State of Incorporation is required."),
+  company_address: z.string().trim().optional(),
+  company_email: z.string().trim().email("Invalid company email format."),
+  contact_person_name: z.string().trim().min(1, "Contact Person Name is required."),
+  contact_person_title: z.string().trim().min(1, "Contact Person Title is required."),
+  contact_person_email: z.string().trim().email("Invalid contact person email format."),
   contact_person_telephone: z.string().min(4, "Contact Person Telephone is required."),
 });
 
