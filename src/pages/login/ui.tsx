@@ -23,8 +23,8 @@ export default function LoginPage() {
   const {
     isLoading,
     isSigningIn,
-    oauthError,
-    oauthFallbackUrl,
+    authError,
+    authFallbackUrl,
     handleAppleSignIn,
     handleGoogleSignIn,
     email,
@@ -77,12 +77,12 @@ export default function LoginPage() {
         </section>
 
         {/* ── Error Banner ── */}
-        {oauthError ? (
+        {authError ? (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mb-6">
-            <p>{oauthError}</p>
-            {oauthFallbackUrl ? (
+            <p>{authError}</p>
+            {authFallbackUrl ? (
               <a
-                href={oauthFallbackUrl}
+                href={authFallbackUrl}
                 className="mt-2 inline-flex font-medium underline underline-offset-2"
               >
                 Continue on the supported sign-in host

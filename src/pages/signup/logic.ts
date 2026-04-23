@@ -22,8 +22,9 @@ import { normalizeLegacyOnboardingRedirectTarget } from "../../services/onboardi
 export interface SignupLogic {
   isLoading: boolean;
   isSigningIn: boolean;
-  oauthError: string | null;
-  oauthFallbackUrl: string | null;
+  authError: string | null;
+  authFallbackUrl: string | null;
+  signupSuccess: boolean;
   email: string;
   setEmail: (val: string) => void;
   password: string;
@@ -39,8 +40,9 @@ export interface SignupLogic {
 export const useSignupLogic = (): SignupLogic => {
   const navigate = useNavigate();
   const [isSigningIn, setIsSigningIn] = useState(false);
-  const [oauthError, setOAuthError] = useState<string | null>(null);
-  const [oauthFallbackUrl, setOAuthFallbackUrl] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authFallbackUrl, setAuthFallbackUrl] = useState<string | null>(null);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -125,8 +127,8 @@ export const useSignupLogic = (): SignupLogic => {
         return;
       }
 
-      setOAuthError(result.message);
-      setOAuthFallbackUrl(result.redirectTo || null);
+      setAuthError(result.message);
+      setAuthFallbackUrl(result.redirectTo || null);
     },
     []
   );
@@ -135,8 +137,8 @@ export const useSignupLogic = (): SignupLogic => {
   const handleAppleSignIn = useCallback(async () => {
     if (isSigningIn) return;
     setIsSigningIn(true);
-    setOAuthError(null);
-    setOAuthFallbackUrl(null);
+    setAuthError(null);
+    setAuthFallbackUrl(null);
     const result = await startOAuth("apple");
     if (!result.ok) {
       handleOAuthFailure(result);
@@ -147,8 +149,8 @@ export const useSignupLogic = (): SignupLogic => {
   const handleGoogleSignIn = useCallback(async () => {
     if (isSigningIn) return;
     setIsSigningIn(true);
-    setOAuthError(null);
-    setOAuthFallbackUrl(null);
+    setAuthError(null);
+    setAuthFallbackUrl(null);
     const result = await startOAuth("google");
     if (!result.ok) {
       handleOAuthFailure(result);
@@ -161,28 +163,30 @@ export const useSignupLogic = (): SignupLogic => {
       if (isSigningIn) return;
 
       if (!email || !password || !confirmPassword) {
-        setOAuthError("Please fill in all fields.");
+        setAuthFallbackUrl(null);
+        setAuthError("Please fill in all fields.");
         return;
       }
 
       if (password !== confirmPassword) {
-        setOAuthError("Passwords do not match.");
+        setAuthFallbackUrl(null);
+        setAuthError("Passwords do not match.");
         return;
       }
 
       setIsSigningIn(true);
-      setOAuthError(null);
-      setOAuthFallbackUrl(null);
+      setAuthError(null);
+      setAuthFallbackUrl(null);
 
       const supabase = config.supabaseClient;
       if (!supabase) {
-        setOAuthError("Authentication is not configured correctly.");
+        setAuthError("Authentication is not configured correctly.");
         setIsSigningIn(false);
         return;
       }
 
       try {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -191,11 +195,15 @@ export const useSignupLogic = (): SignupLogic => {
         });
 
         if (error) {
-          setOAuthError(error.message);
+          setAuthError(error.message);
+        } else if (!data.session) {
+          // Email confirmation required — no session yet
+          setSignupSuccess(true);
         }
+        // If session exists, the auth listener will redirect automatically
       } catch (error) {
         console.error("[Signup] Email signup failed:", error);
-        setOAuthError(
+        setAuthError(
           error instanceof Error
             ? error.message
             : "Unable to sign up right now. Please try again."
@@ -210,8 +218,9 @@ export const useSignupLogic = (): SignupLogic => {
   return {
     isLoading: status === "booting" || shouldRedirectToSupportedHost,
     isSigningIn,
-    oauthError,
-    oauthFallbackUrl,
+    authError,
+    authFallbackUrl,
+    signupSuccess,
     handleAppleSignIn,
     handleGoogleSignIn,
     email,

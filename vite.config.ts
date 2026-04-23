@@ -41,7 +41,16 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     target: 'es2017',
-    chunkSizeWarningLimit: 5000,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': ['@chakra-ui/react', '@emotion/react', '@emotion/styled', 'framer-motion'],
+          'vendor-auth': ['@supabase/supabase-js'],
+        },
+      },
+    },
     // Security: Strip ALL console statements in production builds
     // Prevents exposure of tokens, financial data, and internal logs
     minify: 'terser',

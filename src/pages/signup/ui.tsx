@@ -23,8 +23,9 @@ export default function SignupPage() {
   const {
     isLoading,
     isSigningIn,
-    oauthError,
-    oauthFallbackUrl,
+    authError,
+    authFallbackUrl,
+    signupSuccess,
     handleAppleSignIn,
     handleGoogleSignIn,
     email,
@@ -78,13 +79,20 @@ export default function SignupPage() {
           </p>
         </section>
 
+        {/* ── Success Banner ── */}
+        {signupSuccess && (
+          <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 mb-6">
+            <p>✅ Check your inbox to confirm your email address.</p>
+          </div>
+        )}
+
         {/* ── Error Banner ── */}
-        {oauthError ? (
+        {authError ? (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mb-6">
-            <p>{oauthError}</p>
-            {oauthFallbackUrl ? (
+            <p>{authError}</p>
+            {authFallbackUrl ? (
               <a
-                href={oauthFallbackUrl}
+                href={authFallbackUrl}
                 className="mt-2 inline-flex font-medium underline underline-offset-2"
               >
                 Continue on the supported sign-up host

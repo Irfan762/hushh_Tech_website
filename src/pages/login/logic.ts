@@ -24,8 +24,8 @@ export interface LoginLogic {
   isLoading: boolean;
   isSigningIn: boolean;
   bootTimedOut: boolean;
-  oauthError: string | null;
-  oauthFallbackUrl: string | null;
+  authError: string | null;
+  authFallbackUrl: string | null;
   email: string;
   setEmail: (val: string) => void;
   password: string;
@@ -45,8 +45,8 @@ export const useLoginLogic = (): LoginLogic => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [bootTimedOut, setBootTimedOut] = useState(false);
   const [maxLoadingTimedOut, setMaxLoadingTimedOut] = useState(false);
-  const [oauthError, setOAuthError] = useState<string | null>(null);
-  const [oauthFallbackUrl, setOAuthFallbackUrl] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authFallbackUrl, setAuthFallbackUrl] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { status, startOAuth } = useAuthSession();
@@ -183,8 +183,8 @@ export const useLoginLogic = (): LoginLogic => {
         return;
       }
 
-      setOAuthError(result.message);
-      setOAuthFallbackUrl(result.redirectTo || null);
+      setAuthError(result.message);
+      setAuthFallbackUrl(result.redirectTo || null);
     },
     []
   );
@@ -193,8 +193,8 @@ export const useLoginLogic = (): LoginLogic => {
   const handleAppleSignIn = useCallback(async () => {
     if (isSigningIn) return;
     setIsSigningIn(true);
-    setOAuthError(null);
-    setOAuthFallbackUrl(null);
+    setAuthError(null);
+    setAuthFallbackUrl(null);
     const result = await startOAuth("apple");
     if (!result.ok) {
       handleOAuthFailure(result);
@@ -205,8 +205,8 @@ export const useLoginLogic = (): LoginLogic => {
   const handleGoogleSignIn = useCallback(async () => {
     if (isSigningIn) return;
     setIsSigningIn(true);
-    setOAuthError(null);
-    setOAuthFallbackUrl(null);
+    setAuthError(null);
+    setAuthFallbackUrl(null);
     const result = await startOAuth("google");
     if (!result.ok) {
       handleOAuthFailure(result);
@@ -219,17 +219,18 @@ export const useLoginLogic = (): LoginLogic => {
       if (isSigningIn) return;
 
       if (!email || !password) {
-        setOAuthError("Please enter both email and password.");
+        setAuthFallbackUrl(null);
+        setAuthError("Please enter both email and password.");
         return;
       }
 
       setIsSigningIn(true);
-      setOAuthError(null);
-      setOAuthFallbackUrl(null);
+      setAuthError(null);
+      setAuthFallbackUrl(null);
 
       const supabase = config.supabaseClient;
       if (!supabase) {
-        setOAuthError("Authentication is not configured correctly.");
+        setAuthError("Authentication is not configured correctly.");
         setIsSigningIn(false);
         return;
       }
@@ -241,11 +242,11 @@ export const useLoginLogic = (): LoginLogic => {
         });
 
         if (error) {
-          setOAuthError(error.message);
+          setAuthError(error.message);
         }
       } catch (error) {
         console.error("[Login] Email sign-in failed:", error);
-        setOAuthError(
+        setAuthError(
           error instanceof Error
             ? error.message
             : "Unable to sign in. Please try again."
@@ -268,8 +269,8 @@ export const useLoginLogic = (): LoginLogic => {
     isLoading,
     isSigningIn,
     bootTimedOut,
-    oauthError,
-    oauthFallbackUrl,
+    authError,
+    authFallbackUrl,
     handleAppleSignIn,
     handleGoogleSignIn,
     email,
