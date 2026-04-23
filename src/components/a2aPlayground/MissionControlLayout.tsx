@@ -12,6 +12,7 @@ import {
   Heading,
   Badge,
   Divider,
+  Container,
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { AgentThoughtLog } from './AgentThoughtLog';
@@ -75,10 +76,12 @@ export const MissionControlLayout: React.FC<MissionControlLayoutProps> = ({
       minH="100vh"
       bg="gray.900"
       color="white"
+      display="flex"
+      flexDirection="column"
       py={{ base: 4, md: 8 }}
       px={{ base: 4, md: 8, lg: 12 }}
     >
-      <Container maxW="7xl" p={0} h="full">
+      <Container maxW="7xl" p={0} flex="1" display="flex" flexDirection="column">
         {/* Header */}
         <HStack
           justify="space-between"
@@ -107,7 +110,8 @@ export const MissionControlLayout: React.FC<MissionControlLayoutProps> = ({
         <Grid
           templateColumns={{ base: '1fr', lg: '280px 1fr 320px' }}
           gap={4}
-          h={{ base: 'auto', lg: 'calc(100vh - 180px)' }}
+          flex="1"
+          h={{ base: 'auto' }}
         >
         {/* Left Pane - Agent Network */}
         {!isMobile && (

@@ -113,7 +113,7 @@ export const A2AScenarioSetupScreen: React.FC<A2AScenarioSetupProps> = ({
       py={{ base: 4, md: 8 }}
       px={{ base: 4, md: 8, lg: 12 }}
     >
-      <Container maxW="7xl">
+      <Container maxW="7xl" p={0}>
         {/* Header */}
         <VStack spacing={2} mb={8} textAlign="center">
           <Badge
