@@ -78,58 +78,9 @@ export default function SignupPage() {
           </p>
         </section>
 
-        {/* ── Sign-up Form ── */}
-        <form onSubmit={handleEmailSignup} className="space-y-5 mb-8">
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
-              placeholder="name@email.com"
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-          <HushhTechCta
-            variant={HushhTechCtaVariant.BLACK}
-            type="submit"
-            disabled={isSigningIn}
-          >
-            {isSigningIn ? "Creating Account..." : "Create Account"}
-          </HushhTechCta>
-        </form>
-
+        {/* ── Error Banner ── */}
         {oauthError ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mb-8">
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 mb-6">
             <p>{oauthError}</p>
             {oauthFallbackUrl ? (
               <a
@@ -141,6 +92,71 @@ export default function SignupPage() {
             ) : null}
           </div>
         ) : null}
+
+        {/* ── Sign-up Form ── */}
+        <form onSubmit={handleEmailSignup} className="space-y-5 mb-8">
+          <div className="space-y-1.5">
+            <label 
+              htmlFor="signup-email"
+              className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1"
+            >
+              Email Address
+            </label>
+            <input
+              id="signup-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
+              placeholder="name@email.com"
+              autoComplete="email"
+              required
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label 
+              htmlFor="signup-password"
+              className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1"
+            >
+              Password
+            </label>
+            <input
+              id="signup-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
+              placeholder="••••••••"
+              autoComplete="new-password"
+              required
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label 
+              htmlFor="signup-confirm-password"
+              className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1"
+            >
+              Confirm Password
+            </label>
+            <input
+              id="signup-confirm-password"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
+              placeholder="••••••••"
+              autoComplete="new-password"
+              required
+            />
+          </div>
+          <HushhTechCta
+            variant={HushhTechCtaVariant.BLACK}
+            type="submit"
+            disabled={isSigningIn}
+          >
+            {isSigningIn ? "Creating Account..." : "Create Account"}
+          </HushhTechCta>
+        </form>
 
         {/* ── Divider ── */}
         <div className="flex items-center gap-4 mb-8">

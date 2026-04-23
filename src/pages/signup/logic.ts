@@ -193,6 +193,13 @@ export const useSignupLogic = (): SignupLogic => {
         if (error) {
           setOAuthError(error.message);
         }
+      } catch (error) {
+        console.error("[Signup] Email signup failed:", error);
+        setOAuthError(
+          error instanceof Error
+            ? error.message
+            : "Unable to sign up right now. Please try again."
+        );
       } finally {
         setIsSigningIn(false);
       }
