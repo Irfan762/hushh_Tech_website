@@ -32,7 +32,6 @@ export default function CommunityPage() {
     ndaMetadata,
     session,
     onCategoryChange,
-    handleBackClick,
     setNdaApproved,
     getPostDescription,
     formatDisplayDate,

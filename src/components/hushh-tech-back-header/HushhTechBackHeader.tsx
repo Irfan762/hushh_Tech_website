@@ -12,7 +12,7 @@ import React, { useState } from "react";
 import HushhTechNavDrawer from "../hushh-tech-nav-drawer/HushhTechNavDrawer";
 import HushhTechFaqSheet from "../hushh-tech-faq-sheet/HushhTechFaqSheet";
 import HushhLogo from "../brand/HushhLogo";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 interface HushhTechBackHeaderProps {
   /** Callback when back arrow is clicked */
@@ -44,7 +44,7 @@ const HushhTechBackHeader: React.FC<HushhTechBackHeaderProps> = ({
   return (
     <>
       <header
-        className={`px-6 py-6 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur-md z-40 max-w-5xl mx-auto w-full ${className}`}
+        className={`px-6 py-6 grid grid-cols-3 items-center sticky top-0 bg-white/95 backdrop-blur-md z-40 max-w-5xl mx-auto w-full ${className}`}
       >
         {/* Back button */}
         <button
@@ -59,32 +59,38 @@ const HushhTechBackHeader: React.FC<HushhTechBackHeaderProps> = ({
         </button>
         
         {/* Standardized Logo centered */}
-        <HushhLogo onClick={() => navigate("/")} />
+        <div className="flex justify-center">
+          <Link to="/" aria-label="Home">
+            <HushhLogo />
+          </Link>
+        </div>
 
         {/* Right action button */}
-        {showRightButton && rightType === "hamburger" && (
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition-colors"
-            aria-label="Open menu"
-            tabIndex={0}
-          >
-            <span className="material-symbols-outlined text-white !text-[1.2rem]">
-              menu
-            </span>
-          </button>
-        )}
+        <div className="flex justify-end">
+          {showRightButton && rightType === "hamburger" && (
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition-colors"
+              aria-label="Open menu"
+              tabIndex={0}
+            >
+              <span className="material-symbols-outlined text-white !text-[1.2rem]">
+                menu
+              </span>
+            </button>
+          )}
 
-        {showRightButton && rightType === "label" && (
-          <button
-            onClick={onRightClick ?? (rightLabel?.toLowerCase() === "faqs" ? () => setIsFaqOpen(true) : undefined)}
-            className="h-10 px-5 border border-black text-[11px] font-bold tracking-widest uppercase text-gray-900 hover:bg-black hover:text-white transition-colors flex items-center justify-center"
-            aria-label={rightLabel}
-            tabIndex={0}
-          >
-            {rightLabel}
-          </button>
-        )}
+          {showRightButton && rightType === "label" && (
+            <button
+              onClick={onRightClick ?? (rightLabel?.toLowerCase() === "faqs" ? () => setIsFaqOpen(true) : undefined)}
+              className="h-10 px-5 border border-black text-[11px] font-bold tracking-widest uppercase text-gray-900 hover:bg-black hover:text-white transition-colors flex items-center justify-center"
+              aria-label={rightLabel}
+              tabIndex={0}
+            >
+              {rightLabel}
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Nav Drawer — only rendered when hamburger type */}

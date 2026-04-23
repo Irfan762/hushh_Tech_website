@@ -67,12 +67,15 @@ const communityRoutes = [
 const generateSitemap = () => {
   console.log("🔹 Generating sitemap...");
 
+  // Fixed date for static content to ensure deterministic builds
+  const FIXED_DATE = "2025-04-10T00:00:00.000Z";
+
   // Generate URLs for static pages
   const staticUrls = staticPages.map((page) => {
     return `
       <url>
         <loc>${SITE_URL}${page}</loc>
-        <lastmod>${new Date().toISOString()}</lastmod>
+        <lastmod>${FIXED_DATE}</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.7</priority>
       </url>`;
@@ -83,7 +86,7 @@ const generateSitemap = () => {
     return `
       <url>
         <loc>${SITE_URL}${route}</loc>
-        <lastmod>${new Date().toISOString()}</lastmod>
+        <lastmod>${FIXED_DATE}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>`;

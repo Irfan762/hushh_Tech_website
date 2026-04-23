@@ -22,10 +22,14 @@ const HushhLogo: React.FC<HushhLogoProps> = ({
 }) => {
   const isDark = theme === "dark";
 
+  const Wrapper = onClick ? 'button' : 'div';
+
   return (
-    <div 
-      className={`flex items-center gap-3 cursor-pointer select-none ${className}`} 
+    <Wrapper 
+      type={onClick ? 'button' : undefined}
+      className={`flex items-center gap-3 select-none ${onClick ? 'cursor-pointer' : ''} ${className}`} 
       onClick={onClick}
+      aria-label={onClick ? 'Hushh Technologies – Go to homepage' : undefined}
     >
       <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
         <img
@@ -45,7 +49,7 @@ const HushhLogo: React.FC<HushhLogoProps> = ({
           </span>
         </div>
       )}
-    </div>
+    </Wrapper>
   );
 };
 

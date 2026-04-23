@@ -5,7 +5,7 @@
  */
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import hushhLogo from "../images/Hushhogo.png";
+import HushhLogo from "../brand/HushhLogo";
 import { useAuthSession } from "../../auth/AuthSessionProvider";
 
 interface NavItem {
@@ -18,10 +18,10 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { icon: "home", label: "Home", path: "/" },
-  { icon: "menu_book", label: "Our Philosophy", path: "/philosophy" },
+  { icon: "menu_book", label: "Our Philosophy", path: "/about/leadership" },
   { icon: "pie_chart", label: "Fund A", path: "/discover-fund-a" },
   { icon: "groups", label: "Community", path: "/community" },
-  { icon: "verified_user", label: "KYC Studio Alpha", path: "/kyc" },
+  { icon: "verified_user", label: "KYC Studio", path: "/a2a-playground" },
 ];
 
 const HIGHLIGHT_ITEM: NavItem = {
@@ -33,7 +33,7 @@ const HIGHLIGHT_ITEM: NavItem = {
 };
 
 const BOTTOM_NAV: NavItem[] = [
-  { icon: "mail", label: "Contact", path: "/contact" },
+  { icon: "mail", label: "Contact", path: "/Contact" },
   { icon: "help", label: "FAQ", path: "/faq" },
 ];
 
@@ -80,12 +80,7 @@ const HushhTechNavDrawer: React.FC<HushhTechNavDrawerProps> = ({
       {/* ── Header ── */}
       <div className="px-6 py-6 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-            <img src={hushhLogo} alt="Hushh" className="w-5 h-5 object-contain" />
-          </div>
-          <span className="text-[0.7rem] font-bold tracking-[0.2em] uppercase text-gray-900 pt-0.5">
-            hushh technologies
-          </span>
+          <HushhLogo showText={true} />
         </div>
         <button
           onClick={onClose}

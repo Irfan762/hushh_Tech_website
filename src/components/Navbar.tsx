@@ -9,6 +9,7 @@ import DeleteAccountModal from "./DeleteAccountModal";
 import { useStockQuotes, StockQuote, STOCK_LOGOS } from "../hooks/useStockQuotes";
 import config from "../resources/config/config";
 import { useAuthSession } from "../auth/AuthSessionProvider";
+import { getNavLinks } from "../constants/navigation";
 
 const WELCOME_TOAST_PENDING_KEY = "showWelcomeToast";
 const WELCOME_TOAST_USER_KEY = "showWelcomeToastUserId";
@@ -143,15 +144,7 @@ export default function Navbar() {
 
   const isAuthenticated = status === "authenticated";
 
-  const primaryNavLinks = [
-    { path: "/", label: t('nav.home') },
-    { path: "/about/leadership", label: t('nav.ourPhilosophy') },
-    { path: "/discover-fund-a", label: t('nav.fundA') },
-    { path: "/community", label: t('nav.community') },
-    { path: "/a2a-playground", label: t('nav.kycStudio') },
-    { path: "/contact", label: t('nav.contact') },
-    { path: "/faq", label: t('nav.faq') },
-  ];
+  const primaryNavLinks = getNavLinks(t);
 
   const toggleDrawer = () => setIsOpen((prev) => !prev);
   const handleLinkClick = (path: string) => {
@@ -214,7 +207,9 @@ export default function Navbar() {
         {/* Main Navigation Bar - Soft Light Background */}
         <nav className="flex w-full items-center justify-between bg-white px-4 lg:px-8 h-16 transition-colors duration-300">
           {/* Left: Brand Lockup */}
-          <HushhLogo onClick={() => navigate("/")} />
+          <Link to="/" aria-label="Home">
+            <HushhLogo />
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">

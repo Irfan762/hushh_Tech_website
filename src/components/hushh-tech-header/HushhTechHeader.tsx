@@ -7,10 +7,11 @@
  * Below: Scrolling stock ticker with live quotes (Google, Apple, etc.)
  */
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useBreakpointValue } from "@chakra-ui/react";
 import HushhLogo from "../brand/HushhLogo";
+import { getNavLinks } from "../../constants/navigation";
 import HushhTechNavDrawer from "../hushh-tech-nav-drawer/HushhTechNavDrawer";
 import LanguageSwitcher from "../LanguageSwitcher";
 import { useStockQuotes, StockQuote } from "../../hooks/useStockQuotes";
@@ -68,7 +69,8 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
   const { t } = useTranslation();
   const { status, signOut } = useAuthSession();
   
-  const isDesktop = useBreakpointValue({ base: false, lg: true });
+  const isMobile = useBreakpointValue({ base: true, lg: false });
+  const isDesktop = isMobile === false;
   const isAuthenticated = status === "authenticated";
 
   // Fetch real-time stock quotes (refreshes every 2 minutes)
@@ -76,15 +78,7 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
 
   const isActive = (path: string) => location.pathname === path;
 
-  const primaryNavLinks = [
-    { path: "/", label: t('nav.home', 'Home') },
-    { path: "/about/leadership", label: t('nav.ourPhilosophy', 'Our Philosophy') },
-    { path: "/discover-fund-a", label: t('nav.fundA', 'Fund A') },
-    { path: "/community", label: t('nav.community', 'Community') },
-    { path: "/a2a-playground", label: t('nav.kycStudio', 'KYC Studio') },
-    { path: "/contact", label: t('nav.contact', 'Contact') },
-    { path: "/faq", label: t('nav.faq', 'FAQ') },
-  ];
+  const primaryNavLinks = getNavLinks(t);
 
   return (
     <>
@@ -95,7 +89,9 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
         {/* ── Top bar: Logo + Links + Hamburger ── */}
         <div className="px-4 lg:px-8 h-16 flex justify-between items-center">
           {/* Logo + Brand */}
-          <HushhLogo onClick={() => navigate("/")} />
+          <Link to="/" aria-label="Home">
+            <HushhLogo />
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
