@@ -23,6 +23,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Consumers = lazy(() => import('./pages/services/consumers'));
 const Business = lazy(() => import('./pages/services/business'));
 const SignupPage = lazy(() => import('./pages/signup/ui'));
+const ForgotPasswordPage = lazy(() => import('./pages/forgot-password/ui'));
 const Faq = lazy(() => import('./pages/faq'));
 const Career = lazy(() => import('./pages/career'));
 const CommunityPage = lazy(() => import('./pages/community/ui'));
@@ -175,6 +176,7 @@ function App() {
               <Route path='/services/consumers' element={<Consumers />} />
               <Route path='/services/business' element={<Business />} />
               <Route path='/Signup' element={<SignupPage />} />
+              <Route path='/forgot-password' element={<ForgotPasswordPage />} />
               <Route path='/faq' element={<Faq />} />
               <Route path='/profile' element={
                 <AuthRequiredRoute>

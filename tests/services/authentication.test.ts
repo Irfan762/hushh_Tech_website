@@ -88,6 +88,7 @@ import isLoggedIn from '../../src/services/authentication/isLoggedIn';
 import getAccessToken from '../../src/services/authentication/getAccessToken';
 import getFullName from '../../src/services/authentication/getFullName';
 import signOut from '../../src/services/authentication/signOut';
+import resources from '../../src/resources/resources';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // TEST SUITES
@@ -496,7 +497,14 @@ describe('Authentication Service', () => {
     });
 
     it('should handle missing Supabase client gracefully', async () => {
+      // Temporarily set the mock client to null to validate the safety check
+      const originalClient = resources.config.supabaseClient;
+      (resources.config as any).supabaseClient = null;
+      
       await expect(signOut()).resolves.toBeUndefined();
+      
+      // Restore the mock client
+      (resources.config as any).supabaseClient = originalClient;
     });
 
     it('should handle concurrent signOut calls', async () => {
