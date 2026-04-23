@@ -44,47 +44,53 @@ const HushhTechBackHeader: React.FC<HushhTechBackHeaderProps> = ({
   return (
     <>
       <header
-        className={`px-6 py-6 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur-md z-40 max-w-5xl mx-auto w-full ${className}`}
+        className={`sticky top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 ${className}`}
       >
-        {/* Back button */}
-        <button
-          onClick={onBackClick}
-          className="w-10 h-10 border border-black flex items-center justify-center hover:bg-gray-50 transition-colors"
-          aria-label="Go back"
-          tabIndex={0}
-        >
-          <span className="material-symbols-outlined text-gray-900 text-[20px] font-light">
-            west
-          </span>
-        </button>
-        
-        {/* Standardized Logo centered */}
-        <HushhLogo onClick={() => navigate("/")} />
+        <div className="max-w-7xl mx-auto px-6 md:px-12 py-6 flex justify-between items-center w-full">
+          {/* Back button container (fixed width for centering logo) */}
+          <div className="w-10 md:w-12">
+            <button
+              onClick={onBackClick}
+              className="w-10 h-10 border border-black flex items-center justify-center hover:bg-gray-50 transition-colors"
+              aria-label="Go back"
+              tabIndex={0}
+            >
+              <span className="material-symbols-outlined text-gray-900 text-[20px] font-light">
+                west
+              </span>
+            </button>
+          </div>
+          
+          {/* Standardized Logo centered */}
+          <HushhLogo onClick={() => navigate("/")} />
 
-        {/* Right action button */}
-        {showRightButton && rightType === "hamburger" && (
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition-colors"
-            aria-label="Open menu"
-            tabIndex={0}
-          >
-            <span className="material-symbols-outlined text-white !text-[1.2rem]">
-              menu
-            </span>
-          </button>
-        )}
+          {/* Right action button container (fixed width for centering logo) */}
+          <div className="w-10 md:w-12 flex justify-end">
+            {showRightButton && rightType === "hamburger" && (
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:bg-black/80 transition-colors"
+                aria-label="Open menu"
+                tabIndex={0}
+              >
+                <span className="material-symbols-outlined text-white !text-[1.2rem]">
+                  menu
+                </span>
+              </button>
+            )}
 
-        {showRightButton && rightType === "label" && (
-          <button
-            onClick={onRightClick ?? (rightLabel?.toLowerCase() === "faqs" ? () => setIsFaqOpen(true) : undefined)}
-            className="h-10 px-5 border border-black text-[11px] font-bold tracking-widest uppercase text-gray-900 hover:bg-black hover:text-white transition-colors flex items-center justify-center"
-            aria-label={rightLabel}
-            tabIndex={0}
-          >
-            {rightLabel}
-          </button>
-        )}
+            {showRightButton && rightType === "label" && (
+              <button
+                onClick={onRightClick ?? (rightLabel?.toLowerCase() === "faqs" ? () => setIsFaqOpen(true) : undefined)}
+                className="h-10 px-5 border border-black text-[11px] font-bold tracking-widest uppercase text-gray-900 hover:bg-black hover:text-white transition-colors flex items-center justify-center whitespace-nowrap min-w-[80px]"
+                aria-label={rightLabel}
+                tabIndex={0}
+              >
+                {rightLabel}
+              </button>
+            )}
+          </div>
+        </div>
       </header>
 
       {/* Nav Drawer — only rendered when hamburger type */}

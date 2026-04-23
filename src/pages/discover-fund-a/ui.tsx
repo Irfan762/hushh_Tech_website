@@ -9,7 +9,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDiscoverFundALogic } from "./logic";
-import HushhTechBackHeader from "../../components/hushh-tech-back-header/HushhTechBackHeader";
+import HushhTechHeader from "../../components/hushh-tech-header/HushhTechHeader";
 import HushhTechCta, {
   HushhTechCtaVariant,
 } from "../../components/hushh-tech-cta/HushhTechCta";
@@ -154,10 +154,7 @@ const FundA = () => {
   return (
     <div className="bg-white text-gray-900 min-h-screen antialiased flex flex-col selection:bg-hushh-blue selection:text-white">
       {/* ═══ Header ═══ */}
-      <HushhTechBackHeader
-        onBackClick={() => navigate("/")}
-        rightType="hamburger"
-      />
+      <HushhTechHeader showBack onBackClick={() => navigate("/")} />
 
       {/* ═══ Main ═══ */}
       <main className="px-6 flex-grow max-w-md md:max-w-7xl mx-auto w-full pb-32 md:px-12">

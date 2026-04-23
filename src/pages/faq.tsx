@@ -9,6 +9,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
+import HushhTechHeader from '../components/hushh-tech-header/HushhTechHeader';
 
 interface FaqItem {
   question: string;
@@ -78,7 +79,9 @@ const FaqPage: React.FC = () => {
   };
 
   return (
-    <Container maxW="container.xl" py={12} px={{ base: 4, md: 6 }}>
+    <Box bg="white" minH="100vh">
+      <HushhTechHeader />
+      <Container maxW="7xl" py={12} px={{ base: 6, md: 12 }}>
       {/* Main Header */}
       <Box textAlign="center" mb={16}>
         <Heading 
@@ -157,6 +160,7 @@ const FaqPage: React.FC = () => {
         ))}
       </VStack>
     </Container>
+    </Box>
   );
 };
 

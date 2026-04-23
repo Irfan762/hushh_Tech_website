@@ -3,10 +3,13 @@ import img from "../../files/img.png";
 import img2 from "../../files/img (1).png";
 import { Box, Container, Heading, Text, SimpleGrid, Flex, Image, VStack, HStack, Icon } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
+import HushhTechHeader from '../components/hushh-tech-header/HushhTechHeader';
 
 export default function Leadership() {
   return (
-    <Box bg="white">
+    <Box bg="white" minH="100vh">
+      <HushhTechHeader />
+      <Box bg="white">
       {/* Hero Section */}
       <Box pt={{ base: 16, md: 24 }} px={4} minH={{md:"70vh",base:'60vh'}} textAlign="center">
         <Container maxW="container.lg" mt={{md:16,base:8}}>
@@ -428,6 +431,7 @@ export default function Leadership() {
           </Flex>
         </Container>
       </Box>
+    </Box>
     </Box>
   );
 }

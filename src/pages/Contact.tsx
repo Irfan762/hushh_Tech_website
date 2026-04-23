@@ -23,6 +23,7 @@ import {
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { MapPin, Phone, Clock } from "lucide-react";
+import HushhTechHeader from '../components/hushh-tech-header/HushhTechHeader';
 
 const reasonOptions = [
   "Infrastructure Consultation",
@@ -114,7 +115,9 @@ export default function Contact() {
   };
 
   return (
-    <Container maxW="container.xl" py={12} px={{ base: 4, md: 6 }}>
+    <Box bg="white" minH="100vh">
+      <HushhTechHeader />
+      <Container maxW="7xl" py={12} px={{ base: 6, md: 12 }}>
       {/* Main Header */}
       <Box textAlign="center" mb={8}>
         <Heading 
@@ -382,5 +385,6 @@ export default function Contact() {
       
       <ToastContainer />
     </Container>
+    </Box>
   );
 }

@@ -52,15 +52,21 @@ const TickerChip = ({ quote, isLoading }: { quote: StockQuote; isLoading?: boole
 );
 
 interface HushhTechHeaderProps {
-  /** Show the stock ticker strip below header (default: true) */
+  /** Whether to show the stock ticker strip (default: true) */
   showTicker?: boolean;
-  /** Extra classes on the header element */
+  /** Extra classes on the root container */
   className?: string;
+  /** Whether to show a back button on the left (default: false) */
+  showBack?: boolean;
+  /** Callback for the back button */
+  onBackClick?: () => void;
 }
 
 const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
   showTicker = true,
   className = "",
+  showBack = false,
+  onBackClick,
 }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
@@ -93,19 +99,21 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
         className={`fixed top-0 left-0 right-0 z-50 bg-white shadow-sm transition-colors duration-300 ${className}`}
       >
         {/* ── Top bar: Logo + Links + Hamburger ── */}
-        <div className="px-4 lg:px-8 h-16 flex justify-between items-center">
-          {/* Logo + Brand */}
-          <HushhLogo onClick={() => navigate("/")} />
+        <div className="max-w-7xl mx-auto px-6 md:px-12 h-16 flex items-center w-full">
+          {/* 1. Left: Logo (Fixed width for symmetry) */}
+          <div className="w-[180px] lg:w-[240px] flex-shrink-0">
+            <HushhLogo onClick={() => navigate("/")} />
+          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
+          {/* 2. Center: Desktop Navigation (Takes remaining space and centers content) */}
+          <div className="hidden lg:flex items-center justify-center flex-1 gap-1 px-4 overflow-hidden">
             {primaryNavLinks.map(({ path, label }) => {
               const active = isActive(path);
               return (
                 <button
                   key={path}
                   onClick={() => navigate(path)}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                  className={`rounded-full px-3 py-2 text-[13px] font-semibold transition-colors whitespace-nowrap ${
                     active
                       ? 'bg-[#2F80ED]/10 text-[#1f6cc7]'
                       : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
@@ -117,8 +125,8 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
             })}
           </div>
 
-          {/* Right: Utilities */}
-          <div className="flex items-center gap-3">
+          {/* 3. Right: Utilities (Same fixed width for symmetry) */}
+          <div className="w-[180px] lg:w-[240px] flex items-center justify-end gap-2 shrink-0">
             {/* Language Selector */}
             <LanguageSwitcher variant="light" />
 

@@ -83,7 +83,7 @@ const KaiIndiaApp = React.lazy(() => import('./kai-india/pages'));
 // Content wrapper component that applies conditional margin
 const ContentWrapper = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
-  const isHomePage = location.pathname === '/' || location.pathname === '/signUp' || location.pathname === '/solutions';
+  const isHomePage = location.pathname === '/';
   const isAuthCallback = location.pathname.startsWith('/auth/callback');
   const isUserRegistration = location.pathname === '/user-registration';
   const isOnboarding = location.pathname.startsWith('/onboarding');
@@ -104,10 +104,13 @@ const ContentWrapper = ({ children }: { children: ReactNode }) => {
   const isDeleteAccount = location.pathname === '/delete-account';
   const isLogin = location.pathname.toLowerCase() === '/login';
   const isSignup = location.pathname.toLowerCase() === '/signup';
+  const isContact = location.pathname.toLowerCase() === '/contact';
   const isProfile = location.pathname === '/profile';
 
+  const hideOld = isHomePage || isAuthCallback || isUserRegistration || isOnboarding || isKycFlow || isKycDemo || isA2APlayground || isInvestorGuide || isHushhAI || isKai || isStudio || isHushhUserProfile || isSignNda || isDocumentViewer || isInvestorProfile || isPublicInvestorProfile || isDiscoverFundA || isCommunity || isDeleteAccount || isLogin || isSignup || isContact || isProfile;
+
   return (
-    <div className={`${isHomePage || isAuthCallback || isUserRegistration || isOnboarding || isKycFlow || isKycDemo || isA2APlayground || isInvestorGuide || isHushhAI || isKai || isStudio || isHushhUserProfile || isSignNda || isDocumentViewer || isInvestorProfile || isPublicInvestorProfile || isDiscoverFundA || isCommunity || isDeleteAccount || isLogin || isSignup || isProfile ? '' : 'mt-20'}`}>
+    <div className={`${hideOld ? '' : 'mt-20'}`}>
       {children}
     </div>
   );
@@ -116,6 +119,10 @@ const ContentWrapper = ({ children }: { children: ReactNode }) => {
 // Layout visibility hook - determines which components to show based on route
 const useLayoutVisibility = () => {
   const location = useLocation();
+  const isLogin = location.pathname.toLowerCase() === '/login';
+  const isSignup = location.pathname.toLowerCase() === '/signup';
+  const isContact = location.pathname.toLowerCase() === '/contact';
+  
   const isHomePage = location.pathname === '/';
   const isHushhAI = location.pathname.startsWith('/hushh-ai');
   const isKai = location.pathname.startsWith('/kai');
@@ -125,18 +132,15 @@ const useLayoutVisibility = () => {
   const isFundA = location.pathname === '/discover-fund-a';
   const isCommunity = location.pathname.startsWith('/community');
   const isDeleteAccount = location.pathname === '/delete-account';
-  const isLogin = location.pathname.toLowerCase() === '/login';
-  const isSignup = location.pathname.toLowerCase() === '/signup';
   const isSignNda = location.pathname.startsWith('/sign-nda');
   const isDocumentViewer = location.pathname.startsWith('/document-viewer');
   const isHushhUserProfile = location.pathname.startsWith('/hushh-user-profile');
-
-  // All pages using HushhTechHeader — hide old global Navbar/Footer
   const isKycFlow = location.pathname.startsWith('/kyc-flow');
   const isKycDemo = location.pathname.startsWith('/kyc-demo');
   const isA2APlayground = location.pathname.startsWith('/a2a-playground');
   const isPublicInvestorProfile = location.pathname.startsWith('/investor/');
-  const hideOld = isHushhAI || isKai || isStudio || isHomePage || isOnboarding || isProfile || isFundA || isCommunity || isDeleteAccount || isLogin || isSignup || isSignNda || isDocumentViewer || isHushhUserProfile || isKycFlow || isKycDemo || isA2APlayground || isPublicInvestorProfile;
+
+  const hideOld = isHushhAI || isKai || isStudio || isHomePage || isOnboarding || isProfile || isFundA || isCommunity || isDeleteAccount || isLogin || isSignup || isContact || isSignNda || isDocumentViewer || isHushhUserProfile || isKycFlow || isKycDemo || isA2APlayground || isPublicInvestorProfile;
   return {
     showNavbar: !hideOld,
     showFooter: !hideOld,
@@ -186,12 +190,12 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/about/leadership" element={<Leadership />} />
             <Route path="/about/philosophy" element={<Philosophy />} />
-            <Route path="/Login" element={<LoginPage />} />
-            <Route path="/Contact" element={<Contact />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/benefits" element={<BenefitsPage />} />
             <Route path='/services/consumers' element={<Consumers />} />
             <Route path='/services/business' element={<Business />} />
-            <Route path='/Signup' element={<SignupPage />} />
+            <Route path='/signup' element={<SignupPage />} />
             <Route path='/faq' element={<Faq />} />
             <Route path='/profile' element={
               <AuthRequiredRoute>

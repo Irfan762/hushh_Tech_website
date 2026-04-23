@@ -17,10 +17,13 @@ import {
   Button
 } from "@chakra-ui/react";
 import { MapPin, Clock, ChevronRight, Rocket, DollarSign, Star } from "lucide-react";
+import HushhTechHeader from '../../components/hushh-tech-header/HushhTechHeader';
 
 const CareerList = () => {
   return (
-    <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
+    <Box bg="white" minH="100vh">
+      <HushhTechHeader />
+      <Container maxW="7xl" px={{ base: 6, md: 12 }}>
       {/* Main Header */}
       <Box 
         textAlign="center" 
@@ -256,6 +259,7 @@ const CareerList = () => {
         </Button>
       </Flex>
     </Container>
+    </Box>
   );
 };
 
