@@ -14,7 +14,7 @@
  * Logic stays in logic.ts — zero changes there.
  */
 import { useHomeLogic } from "./logic";
-import HushhTechHeader from "../../components/hushh-tech-header/HushhTechHeader";
+import HushhTechBackHeader from "../../components/hushh-tech-back-header/HushhTechBackHeader";
 import HushhTechFooter, {
   HushhFooterTab,
 } from "../../components/hushh-tech-footer/HushhTechFooter";
@@ -34,7 +34,7 @@ export default function HomePage() {
       className="bg-white antialiased text-gray-900 min-h-screen flex flex-col relative selection:bg-hushh-blue selection:text-white"
     >
       {/* ═══ Header (fixed to top with ticker) ═══ */}
-      <HushhTechHeader />
+      <HushhTechBackHeader rightType="hamburger" onBackClick={() => {}} />
 
       {/* ═══ Main Content ═══ */}
       <main className="flex-1 px-6 pb-32 flex flex-col gap-12 pt-4 max-w-md md:max-w-6xl mx-auto w-full md:px-12">
@@ -61,7 +61,7 @@ export default function HomePage() {
         </section>
 
         {/* ── Feature Cards (AI-Powered / Human-Led) ── */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto md:max-w-none w-full">
           <div className="bg-ios-gray-bg p-5 rounded-2xl border border-gray-200/60 flex flex-col justify-between min-h-[180px] hover:border-hushh-blue/30 transition-colors">
             <span className="material-symbols-outlined thin-icon text-3xl mb-4 text-hushh-blue">
               neurology

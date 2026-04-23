@@ -67,6 +67,17 @@ export default defineConfig({
           if (req.url && (req.url.endsWith('.js') || req.url.endsWith('.ts'))) {
             return req.url;
           }
+          if (!req.url) {
+            return;
+          }
+          try {
+            const { pathname } = new URL(req.url, 'http://localhost');
+            if (['.js', '.jsx', '.ts', '.tsx'].some((ext) => pathname.endsWith(ext))) {
+              return req.url;
+            }
+          } catch {
+            return;
+          }
         }
       },
     },

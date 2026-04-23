@@ -54,7 +54,16 @@ const individualSchema = z.object({
   country: z.string().min(1, "Country for taxation is required."),
   individual_address: z.string().min(1, "Residential Address is required."),
   legal_email: z.string().email("Invalid email format."),
-  mobile_telephone: z.string().min(4, "Mobile Telephone is required."),
+  mobile_telephone: z.string().refine((val) => {
+    try {
+      const phoneNumber = parsePhoneNumberFromString(val);
+      return phoneNumber ? phoneNumber.isValid() : false;
+    } catch (e) {
+      return false;
+    }
+  }, {
+    message: "Invalid mobile telephone number.",
+  }),
 });
 
 const organisationSchema = z.object({
@@ -107,9 +116,9 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
     mode: "onTouched",
     defaultValues: {
       investorType: "Individual",
-      ndaConfirmed: undefined,
-      ndaTermsAccepted: undefined,
-    } as any,
+      ndaConfirmed: false,
+      ndaTermsAccepted: false,
+    },
   });
 
   const investorType = watch("investorType");
@@ -186,10 +195,11 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
       
       if (resData === "Approved" || (typeof resData === "string" && resData.startsWith("Requested permission"))) {
         toast({ title: "Request Submitted", description: "Your access request has been sent and is pending approval.", status: "success", duration: 4000, isClosable: true });
-        window.location.href = "/";
+        onSubmit(resData);
         handleClose();
       } else if (resData === "Rejected") {
         toast({ title: "Request Rejected", description: "Your request was rejected. Please re-apply after 2-3 days.", status: "error", duration: 4000, isClosable: true });
+        onSubmit(resData);
       } else if (resData === "Pending") {
         toast({ title: "Request Pending", description: "Your request is still under review.", status: "info", duration: 4000, isClosable: true });
         onSubmit(resData);
@@ -202,7 +212,6 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
           isClosable: true 
         });
         onSubmit(resData);
-        window.location.href = "/profile";
       } else {
         toast({ title: "Unexpected Response", description: `Received: ${resData}`, status: "error", duration: 4000, isClosable: true });
         onSubmit(resData);
@@ -313,8 +322,7 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
                     name="mobile_telephone"
                     control={control}
                     render={({ field }) => (
-                      <PhoneInput country={"us"} value={field.value || ""} onChange={field.onChange} inputStyle={{ width: "100%", height: "40px", fontSize: "1rem", borderColor: "#E2E8F0", backgroundColor: "white" }} containerStyle={{ width: "100%" }} />
-                    )}
+                      <PhoneInput country={"in"} value={field.value || ""} onChange={field.onChange} inputStyle={{ width: "100%", height: "40px", fontSize: "1rem", borderColor: "#E2E8F0", backgroundColor: "white" }} containerStyle={{ width: "100%" }} />                    )}
                   />
                   <FormErrorMessage>{(errors as any).mobile_telephone?.message}</FormErrorMessage>
                 </FormControl>
@@ -373,8 +381,7 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
                     name="contact_person_telephone"
                     control={control}
                     render={({ field }) => (
-                      <PhoneInput country={"us"} value={field.value || ""} onChange={field.onChange} inputStyle={{ width: "100%", height: "40px", fontSize: "1rem", borderColor: "#E2E8F0", backgroundColor: "white" }} containerStyle={{ width: "100%" }} />
-                    )}
+                      <PhoneInput country={"in"} value={field.value || ""} onChange={field.onChange} inputStyle={{ width: "100%", height: "40px", fontSize: "1rem", borderColor: "#E2E8F0", backgroundColor: "white" }} containerStyle={{ width: "100%" }} />                    )}
                   />
                   <FormErrorMessage>{(errors as any).contact_person_telephone?.message}</FormErrorMessage>
                 </FormControl>
@@ -488,8 +495,8 @@ const InvestorProfilePage: React.FC<NDARequestModalProps> = ({
               <Box p={2} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
                 <Text fontSize="sm">
                   {investorType === "Individual" 
-                    ? (watchAllFields as any).name || "Not provided" 
-                    : (watchAllFields as any).contact_person_name || "Not provided"}
+                    ? watchAllFields.name || "Not provided" 
+                    : watchAllFields.contact_person_name || "Not provided"}
                 </Text>
               </Box>
             </Box>
