@@ -75,7 +75,16 @@ const organisationSchema = z.object({
   contact_person_name: z.string().trim().min(1, "Contact Person Name is required."),
   contact_person_title: z.string().trim().min(1, "Contact Person Title is required."),
   contact_person_email: z.string().trim().email("Invalid contact person email format."),
-  contact_person_telephone: z.string().min(4, "Contact Person Telephone is required."),
+  contact_person_telephone: z.string().refine((val) => {
+    try {
+      const phoneNumber = parsePhoneNumberFromString(val);
+      return phoneNumber ? phoneNumber.isValid() : false;
+    } catch (e) {
+      return false;
+    }
+  }, {
+    message: "Invalid contact person telephone number.",
+  }),
 });
 
 const finalSchema = z.discriminatedUnion("investorType", [

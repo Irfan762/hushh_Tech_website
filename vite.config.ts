@@ -64,12 +64,7 @@ export default defineConfig({
         changeOrigin: true,
         // Don't proxy source files that the frontend imports directly (e.g., shared types/models)
         bypass: function (req, _res, _options) {
-          if (req.url && (req.url.endsWith('.js') || req.url.endsWith('.ts'))) {
-            return req.url;
-          }
-          if (!req.url) {
-            return;
-          }
+          if (!req.url) return;
           try {
             const { pathname } = new URL(req.url, 'http://localhost');
             if (['.js', '.jsx', '.ts', '.tsx'].some((ext) => pathname.endsWith(ext))) {

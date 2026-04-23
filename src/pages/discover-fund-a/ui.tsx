@@ -160,7 +160,7 @@ const FundA = () => {
       />
 
       {/* ═══ Main ═══ */}
-      <main className="px-6 flex-grow max-w-md md:max-w-5xl mx-auto w-full pb-32 md:px-12">
+      <main className="px-6 flex-grow max-w-md md:max-w-7xl mx-auto w-full pb-32 md:px-12">
         {/* ── Hero ── */}
         <section className="pt-6 pb-8">
           {/* pill badge */}

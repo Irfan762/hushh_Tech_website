@@ -47,7 +47,7 @@ export default function CommunityPage() {
       <HushhTechHeader />
 
       {/* ═══ Main ═══ */}
-      <main className="px-6 flex-grow max-w-md mx-auto w-full pb-32">
+      <main className="px-6 flex-grow max-w-md md:max-w-7xl mx-auto w-full pb-32 md:px-12">
         {/* ── Hero ── */}
         <section className="pt-6 pb-6">
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-hushh-blue/20 rounded-full mb-6">
