@@ -8,9 +8,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import HushhTechHeader from "../../components/hushh-tech-header/HushhTechHeader";
+
 const PrivacyPolicyPage: React.FC = () => {
   return (
-    <>
+    <Box bg="white" minH="100vh">
+      <HushhTechHeader />
+      <Box maxW="7xl" mx="auto" px={{ base: 6, md: 12 }}>
     <Box textAlign="center" mt={{md:'5rem',base:'2rem'}} mb={10}>
         <Heading as="h1" size="2xl" fontWeight={'500'} className="blue-gradient-text" my={{md:'5rem',base:'2rem'}}>
           Website Privacy Policy
@@ -217,7 +221,8 @@ const PrivacyPolicyPage: React.FC = () => {
         </Box>
       </VStack>
     </Container>
-    </>
+    </Box>
+    </Box>
   );
 };
 

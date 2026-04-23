@@ -36,6 +36,7 @@ import {
   Check,
 } from "lucide-react";
 import "./benefits.css";
+import HushhTechHeader from "../../components/hushh-tech-header/HushhTechHeader";
 
 const BenefitsPage: React.FC = () => {
   // Use responsive values based on breakpoint
@@ -46,7 +47,9 @@ const BenefitsPage: React.FC = () => {
   const iconSize = useBreakpointValue({ base: "2xl", md: "3xl" });
   
   return (
-    <Container maxW="100%" bg={'white'} py={10} px={{ base: 4, md: 8 }}>
+    <Box bg="white" minH="100vh">
+      <HushhTechHeader />
+      <Container maxW="7xl" bg={'white'} py={10} px={{ base: 4, md: 12 }}>
       {/* Main Header */}
       <Box textAlign="center" mb={{ base: 8, md: 12 }} minH={{ base: "40vh", md: "60vh" }} display={'flex'} flexDirection={'column'} justifyContent={'center'}>
         <Heading 
@@ -311,6 +314,7 @@ const BenefitsPage: React.FC = () => {
         </Button>
       </Box>
     </Container>
+    </Box>
   );
 };
 

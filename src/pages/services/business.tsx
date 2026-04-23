@@ -23,10 +23,13 @@ import {
   AccordionPanel,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "lucide-react";
+import HushhTechHeader from "../../components/hushh-tech-header/HushhTechHeader";
 
 const Business = () => {
   return (
-    <>
+    <Box bg="white" minH="100vh">
+      <HushhTechHeader />
+      <Box maxW="7xl" mx="auto" px={{ base: 6, md: 12 }}>
       <Box
         gap={{ md: "3rem", base: "1rem" }}
         display={"flex"}
@@ -711,7 +714,8 @@ VIBE Search API
           </AccordionItem>
         </Accordion>
       </VStack>
-    </>
+      </Box>
+    </Box>
   );
 };
 

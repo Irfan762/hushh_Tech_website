@@ -1,8 +1,12 @@
 import lineGraph from '../../files/lineGraph.svg';
+import HushhTechHeader from './hushh-tech-header/HushhTechHeader';
+import { Box } from '@chakra-ui/react';
 
 export default function Philosophy() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <Box bg="white" minH="100vh">
+      <HushhTechHeader />
+      <div className="max-w-7xl mx-auto px-4 py-12">
       {/* Heading Section */}
       <div className="text-center mb-16">
         <h1 className="text-3xl md:text-4xl font-bold mb-6">Investment meets Innovation</h1>
@@ -125,6 +129,7 @@ export default function Philosophy() {
           </a>
         </div>
       </section>
-    </div>
+      </div>
+    </Box>
   );
 }

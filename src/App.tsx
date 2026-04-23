@@ -75,6 +75,7 @@ import DocumentViewerPage from './pages/document-viewer';
 import NDAAdminPage from './pages/nda-admin';
 import { AuthSessionProvider, useAuthSession } from './auth/AuthSessionProvider';
 import AuthRequiredRoute from './components/AuthRequiredRoute';
+import HushhTechHeader from './components/hushh-tech-header/HushhTechHeader';
 
 // Google Analytics configuration
 const GA_TRACKING_ID = 'G-R58S9WWPM0';
@@ -102,12 +103,19 @@ const ContentWrapper = ({ children }: { children: ReactNode }) => {
   const isDiscoverFundA = location.pathname === '/discover-fund-a';
   const isCommunity = location.pathname.startsWith('/community');
   const isDeleteAccount = location.pathname === '/delete-account';
+  const isFAQ = location.pathname.toLowerCase() === '/faq';
+  const isCareer = location.pathname.startsWith('/career');
+  const isLeadership = location.pathname === '/about/leadership';
+  const isPhilosophy = location.pathname === '/about/philosophy';
+  const isBenefits = location.pathname === '/benefits';
+  const isServices = location.pathname.startsWith('/services');
+  const isPrivacyPolicy = location.pathname === '/privacy-policy';
   const isLogin = location.pathname.toLowerCase() === '/login';
   const isSignup = location.pathname.toLowerCase() === '/signup';
   const isContact = location.pathname.toLowerCase() === '/contact';
   const isProfile = location.pathname === '/profile';
 
-  const hideOld = isHomePage || isAuthCallback || isUserRegistration || isOnboarding || isKycFlow || isKycDemo || isA2APlayground || isInvestorGuide || isHushhAI || isKai || isStudio || isHushhUserProfile || isSignNda || isDocumentViewer || isInvestorProfile || isPublicInvestorProfile || isDiscoverFundA || isCommunity || isDeleteAccount || isLogin || isSignup || isContact || isProfile;
+  const hideOld = isHomePage || isAuthCallback || isUserRegistration || isOnboarding || isKycFlow || isKycDemo || isA2APlayground || isInvestorGuide || isHushhAI || isKai || isStudio || isHushhUserProfile || isSignNda || isDocumentViewer || isInvestorProfile || isPublicInvestorProfile || isDiscoverFundA || isCommunity || isDeleteAccount || isLogin || isSignup || isContact || isProfile || isFAQ || isCareer || isLeadership || isPhilosophy || isBenefits || isServices || isPrivacyPolicy;
 
   return (
     <div className={`${hideOld ? '' : 'mt-20'}`}>
@@ -140,7 +148,15 @@ const useLayoutVisibility = () => {
   const isA2APlayground = location.pathname.startsWith('/a2a-playground');
   const isPublicInvestorProfile = location.pathname.startsWith('/investor/');
 
-  const hideOld = isHushhAI || isKai || isStudio || isHomePage || isOnboarding || isProfile || isFundA || isCommunity || isDeleteAccount || isLogin || isSignup || isContact || isSignNda || isDocumentViewer || isHushhUserProfile || isKycFlow || isKycDemo || isA2APlayground || isPublicInvestorProfile;
+  const isFAQ = location.pathname.toLowerCase() === '/faq';
+  const isCareer = location.pathname.startsWith('/career');
+  const isLeadership = location.pathname === '/about/leadership';
+  const isPhilosophy = location.pathname === '/about/philosophy';
+  const isBenefits = location.pathname === '/benefits';
+  const isServices = location.pathname.startsWith('/services');
+  const isPrivacyPolicy = location.pathname === '/privacy-policy';
+
+  const hideOld = isHushhAI || isKai || isStudio || isHomePage || isOnboarding || isProfile || isFundA || isCommunity || isDeleteAccount || isLogin || isSignup || isContact || isSignNda || isDocumentViewer || isHushhUserProfile || isKycFlow || isKycDemo || isA2APlayground || isPublicInvestorProfile || isFAQ || isCareer || isLeadership || isPhilosophy || isBenefits || isServices || isPrivacyPolicy;
   return {
     showNavbar: !hideOld,
     showFooter: !hideOld,

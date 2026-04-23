@@ -3,7 +3,7 @@ import img from "../../files/img.png";
 import img2 from "../../files/img (1).png";
 import { Box, Container, Heading, Text, SimpleGrid, Flex, Image, VStack, HStack, Icon } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
-import HushhTechHeader from '../components/hushh-tech-header/HushhTechHeader';
+import HushhTechHeader from './hushh-tech-header/HushhTechHeader';
 
 export default function Leadership() {
   return (

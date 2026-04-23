@@ -84,7 +84,7 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
 
   const primaryNavLinks = [
     { path: "/", label: t('nav.home', 'Home') },
-    { path: "/about/leadership", label: t('nav.ourPhilosophy', 'Our Philosophy') },
+    { path: "/about/philosophy", label: t('nav.ourPhilosophy', 'Our Philosophy') },
     { path: "/discover-fund-a", label: t('nav.fundA', 'Fund A') },
     { path: "/community", label: t('nav.community', 'Community') },
     { path: "/a2a-playground", label: t('nav.kycStudio', 'KYC Studio') },
@@ -99,7 +99,7 @@ const HushhTechHeader: React.FC<HushhTechHeaderProps> = ({
         className={`fixed top-0 left-0 right-0 z-50 bg-white shadow-sm transition-colors duration-300 ${className}`}
       >
         {/* ── Top bar: Logo + Links + Hamburger ── */}
-        <div className="max-w-7xl mx-auto px-6 md:px-12 h-16 flex items-center w-full">
+        <div className="w-full px-6 md:px-12 h-16 flex items-center">
           {/* 1. Left: Logo (Fixed width for symmetry) */}
           <div className="w-[180px] lg:w-[240px] flex-shrink-0">
             <HushhLogo onClick={() => navigate("/")} />
