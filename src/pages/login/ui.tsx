@@ -79,21 +79,29 @@ export default function LoginPage() {
         {/* ── Sign-in Form ── */}
         <form onSubmit={handleEmailLogin} className="space-y-5 mb-8">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1">
+            <label 
+              htmlFor="login-email"
+              className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest ml-1"
+            >
               Email Address
             </label>
             <input
+              id="login-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
               placeholder="name@email.com"
+              autoComplete="email"
               required
             />
           </div>
           <div className="space-y-1.5">
             <div className="flex justify-between items-center ml-1">
-              <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
+              <label 
+                htmlFor="login-password"
+                className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest"
+              >
                 Password
               </label>
               <Link to="/forgot-password" className="text-[11px] font-medium text-hushh-blue hover:underline">
@@ -101,11 +109,13 @@ export default function LoginPage() {
               </Link>
             </div>
             <input
+              id="login-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200/60 rounded-xl focus:bg-white focus:border-hushh-blue focus:ring-4 focus:ring-hushh-blue/5 outline-none transition-all text-[15px] placeholder:text-gray-300"
               placeholder="••••••••"
+              autoComplete="current-password"
               required
             />
           </div>

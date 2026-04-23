@@ -243,6 +243,13 @@ export const useLoginLogic = (): LoginLogic => {
         if (error) {
           setOAuthError(error.message);
         }
+      } catch (error) {
+        console.error("[Login] Email sign-in failed:", error);
+        setOAuthError(
+          error instanceof Error
+            ? error.message
+            : "Unable to sign in. Please try again."
+        );
       } finally {
         setIsSigningIn(false);
       }

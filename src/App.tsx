@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, ReactNode, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomePage from './pages/home/ui';
@@ -7,7 +7,6 @@ import ScrollToTop from './components/ScrollToTop';
 import OnboardingShellAutoPadding from './components/OnboardingShellAutoPadding';
 import { ChakraProvider } from '@chakra-ui/react';
 import theme from './theme';
-import { useEffect, ReactNode, lazy } from 'react';
 import MobileBottomNav from './components/MobileBottomNav';
 import GlobalNDAGate from './components/GlobalNDAGate';
 import { AuthSessionProvider, useAuthSession } from './auth/AuthSessionProvider';
